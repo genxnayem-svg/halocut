@@ -1,0 +1,29 @@
+/* HaloCut Retakes panel. © 2026 Imtayz Nayem */
+.btn.small { padding: 5px 10px; font-size: 11px; }
+.y-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
+.y-row select, .row select { min-width: 0; background: rgba(0, 0, 0, .3); color: var(--text); border: 1px solid var(--line); border-radius: 7px; padding: 5px 6px; font: inherit; }
+.y-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.r-finds { display: flex; flex-direction: column; gap: 2px; }
+.r-find { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 9px; border: 1px solid var(--line); cursor: pointer; }
+.r-find input { accent-color: var(--accent2); }
+.r-find i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.r-find span { flex: 1; }
+.r-find small { color: var(--muted); }
+.r-find b { font: 600 11px ui-monospace, Menlo, monospace; color: var(--muted); }
+.z-field { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
+.z-field span { color: var(--muted); font-size: 11px; }
+.z-field input { background: rgba(0, 0, 0, .3); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit; outline: none; }
+.r-text {
+  max-height: 300px; overflow: auto; padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: rgba(0, 0, 0, .25);
+  line-height: 1.9; font-size: 12.5px; margin-bottom: 8px;
+}
+.r-text .w { cursor: pointer; border-radius: 4px; padding: 1px 1px; }
+.r-text .w:hover { background: rgba(255, 255, 255, .07); }
+.r-text .cut { cursor: pointer; border-radius: 5px; padding: 1px 4px; margin: 0 1px; text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.r-text .cut.off { text-decoration: none; opacity: .55; background: none !important; outline: 1px dashed rgba(255, 255, 255, .25); }
+.r-text .tc { color: var(--muted); font: 10px ui-monospace, Menlo, monospace; margin-right: 4px; }
+.k-retake { background: rgba(232, 69, 124, .28); }
+.k-sound { background: rgba(255, 138, 61, .3); }
+.k-stutter { background: rgba(255, 210, 74, .26); }
+.k-word { background: rgba(54, 194, 255, .24); }
+.k-mumble { background: rgba(163, 91, 240, .3); font-style: italic; }

@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'">
+  <title>HaloCut Quick search</title>
+  <link rel="stylesheet" href="search.css">
+</head>
+<body>
+  <div class="panel" id="panel">
+    <div class="top">
+      <svg class="glass" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input id="q" type="text" spellcheck="false" autocomplete="off" placeholder="Search effects, transitions, looks, commands…" aria-label="Search">
+      <span class="app" id="app">Premiere Pro</span>
+    </div>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="error" id="error" hidden></div>
+    <div class="list" id="list" role="listbox"></div>
+    <div class="empty" id="empty" hidden></div>
+    <div class="foot">
+      <span><kbd>↩</kbd> on the selected clips</span><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Tab</kbd> next group</span><span><kbd>Esc</kbd> close</span>
+      <span class="count" id="count"></span>
+    </div>
+  </div>
+  <script src="../src/tool-catalog.js"></script>
+  <script src="../src/quick-search.js"></script>
+  <script src="icons.js"></script>
+  <script src="search.js"></script>
+</body>
+</html>

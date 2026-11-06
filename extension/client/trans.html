@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Transitions</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="motion.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Transitions</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="8" height="12" rx="1.5"/><rect x="13" y="6" width="8" height="12" rx="1.5"/><path d="M12 3v18" stroke-dasharray="2 2"/></svg></span>
+      <span class="pill">TRANSITIONS</span>
+    </div>
+    <p class="lead">Transitions on your cuts.</p>
+    <p class="hint">Park the playhead on a cut, or select the clips on both sides of several cuts. Built from Premiere's own Transform and blur effects: no plugin needed to play them.</p>
+
+    <div class="m-stage"><canvas id="tPreview"></canvas><button class="m-play" id="tPlay">❚❚</button></div>
+    <div class="chips" id="tList"></div>
+    <div class="chips" id="tDirs" hidden></div>
+
+    <label class="row"><span>Duration<small>Both sides of the cut together</small></span><span class="inline"><input type="range" id="tDur" min="0.2" max="1.6" step="0.05" value="0.6"><b id="tDurOut"></b></span></label>
+    <label class="row"><span>Strength</span><span class="inline"><input type="range" id="tStr" min="0.3" max="2" step="0.05" value="1"><b id="tStrOut"></b></span></label>
+
+    <div class="foot">
+      <span class="sum" id="tSum"><span class="dot"></span><span id="tSumText">Park the playhead on a cut, then Apply</span></span>
+      <span class="btns"><button class="btn" id="tRemove" title="Sets these effects back to neutral on the selected clips">Remove</button><button class="btn primary" id="tApply">Apply</button></span>
+    </div>
+    <div class="keys"><kbd>Space</kbd> play <kbd>←</kbd><kbd>→</kbd> pick <kbd>Enter</kbd> apply</div>
+  </section>
+
+  <p class="copy">HaloCut Transitions · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="trans-core.js"></script>
+  <script src="main.js"></script>
+  <script src="trans.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

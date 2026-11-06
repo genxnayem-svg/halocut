@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Resize</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="resize.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Resize</span></div>
+      <div class="host" id="host">After Effects</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="11" height="8" rx="1.5"/><rect x="15" y="4" width="6" height="11" rx="1.5"/><rect x="7" y="16" width="5" height="5" rx="1"/></svg></span>
+      <span class="pill">RESIZE · AE</span>
+    </div>
+    <p class="lead">One comp, every size.</p>
+    <p class="hint">Makes a copy of the open comp in each size you pick. Backgrounds fill the frame, titles and logos keep their place by the nearest edges. Your master comp is never changed.</p>
+
+    <div class="r-master"><div><b id="zName">No comp read yet</b><small id="zSize"></small></div><button class="btn small" id="zRead">Read the open comp</button></div>
+
+    <div class="section">Sizes</div>
+    <div class="r-sizes" id="zSizes"></div>
+    <div class="r-custom">
+      <input type="number" id="zW" placeholder="Width" min="16" max="8192"><span>×</span><input type="number" id="zH" placeholder="Height" min="16" max="8192">
+      <button class="btn small" id="zAdd">Add size</button>
+    </div>
+
+    <div class="r-previews" id="zPreviews"></div>
+
+    <div class="section">Layers <span class="muted small">· the rule is kept in each layer's comment</span></div>
+    <div class="r-layers" id="zLayers"><p class="hint small">Read the open comp to see its layers</p></div>
+
+    <label class="row"><span>Title-safe guides in each size</span><input type="checkbox" id="zGuides" checked></label>
+    <label class="row"><span>Add them all to the Render Queue</span><input type="checkbox" id="zQueue"></label>
+
+    <div class="foot">
+      <span class="sum" id="zSum"><span class="dot"></span><span id="zSumText">Open your master comp, then Read it</span></span>
+      <button class="btn primary" id="zMake" disabled>Make sizes</button>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Resize · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="resize-core.js"></script>
+  <script src="main.js"></script>
+  <script src="resize.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

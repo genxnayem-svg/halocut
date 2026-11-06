@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Type</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="type.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Type</span></div>
+      <div class="host" id="host">After Effects</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><path d="M5 6h14M12 6v13M9 19h6"/></svg></span>
+      <span class="pill">TYPE · AE</span>
+    </div>
+    <p class="lead">Kinetic type, made of AE's own animators.</p>
+    <p class="hint">Each style is a text animator with a range selector, so after Apply you can still open it in the timeline and change anything.</p>
+
+    <div class="t-stage"><canvas id="tStage"></canvas></div>
+    <label class="z-field"><span>Preview text <span id="tFrom"></span></span><input type="text" id="tText" value="Make it move"></label>
+
+    <div class="chips" id="tGroups"></div>
+    <div class="t-styles" id="tStyles"></div>
+
+    <label class="row"><span>Duration</span><span class="inline"><input type="range" id="tDur" min="0.2" max="4" step="0.1" value="1"><b id="tDurOut"></b></span></label>
+    <label class="row"><span>Delay</span><span class="inline"><input type="range" id="tDelay" min="0" max="3" step="0.1" value="0"><b id="tDelayOut"></b></span></label>
+    <div class="row"><span>Moves by</span><div class="chips" id="tBased"></div></div>
+    <label class="row"><span>Ease the start and end</span><input type="checkbox" id="tEase" checked></label>
+
+    <div class="btns t-row">
+      <button class="btn primary" id="tApply">Apply</button>
+      <button class="btn" id="tRetime" title="Set the duration of the HaloCut styles already on the selected layers">Retime</button>
+      <button class="btn" id="tRemove">Remove</button>
+      <button class="btn" id="tLines" title="One layer per line, so each line can move on its own">Lines to layers</button>
+    </div>
+
+    <div class="foot">
+      <span class="sum" id="tSum"><span class="dot"></span><span id="tSumText">Select text layers, pick a style, Apply</span></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Type · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="type-core.js"></script>
+  <script src="main.js"></script>
+  <script src="type.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

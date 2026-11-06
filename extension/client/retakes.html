@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Retakes</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="retakes.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Retakes</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.6"/><circle cx="6" cy="17" r="2.6"/><path d="M8.2 8.4 20 17M8.2 15.6 20 7"/></svg></span>
+      <span class="pill">RETAKES</span>
+    </div>
+    <p class="lead">Cut the ums and the false starts.</p>
+    <p class="hint">Listens to the selected clips and marks what to cut. Untick anything you want to keep. The cuts go through every track together, like Silence does.</p>
+
+    <div class="section">1 · Listen</div>
+    <div class="y-row">
+      <select id="rLang" title="Language"></select>
+      <select id="rModel" title="Speech model"></select>
+    </div>
+    <div class="y-btns">
+      <button class="btn primary small" id="rListen">Listen to selected clips</button>
+      <button class="btn small" id="rLast" title="Words from HaloCut Studio's last Captions run (mumbles need a fresh listen)">Last Studio words</button>
+    </div>
+
+    <div class="section">2 · Find</div>
+    <div class="r-finds" id="rFinds"></div>
+    <label class="z-field" id="rWordsRow" hidden><span>Filler words to look for</span><input type="text" id="rWordList"></label>
+
+    <div class="section">Transcript <span class="muted" id="rCount"></span></div>
+    <p class="hint small" id="rHint" hidden>Click a marked bit to keep it · click any other word to move the playhead there</p>
+    <div class="r-text" id="rText" hidden></div>
+
+    <label class="row"><span>Music track<small>Left exactly as it is</small></span><select id="rMusic"><option value="-1">None</option></select></label>
+    <label class="row"><span>Keep a copy of the sequence first</span><input type="checkbox" id="rCopy" checked></label>
+
+    <div class="foot">
+      <span class="sum" id="rSum"><span class="dot"></span><span id="rSumText">Select clips, then Listen</span></span>
+      <button class="btn primary" id="rCut" disabled>Cut them</button>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Retakes · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="silence.js"></script>
+  <script src="captions.js"></script>
+  <script src="retakes-core.js"></script>
+  <script src="main.js"></script>
+  <script src="retakes.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

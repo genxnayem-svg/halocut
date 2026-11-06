@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Markers</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="markers.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Markers</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><path d="M6 21V4M6 4h11l-2 4 2 4H6"/></svg></span>
+      <span class="pill">MARKERS</span>
+    </div>
+    <p class="lead">Markers into chapters, files and cuts.</p>
+
+    <div class="k-bar">
+      <button class="btn" id="kRefresh">Refresh</button>
+      <span class="muted small" id="kCount">No sequence read yet</span>
+      <label class="mini-check right"><input type="checkbox" id="kAll"> All</label>
+    </div>
+    <div class="k-colors" id="kColors"></div>
+    <div class="k-list" id="kList"></div>
+
+    <h4 class="k-h">YouTube chapters</h4>
+    <textarea class="k-text" id="kChapters" readonly rows="5" placeholder="Your chapters appear here"></textarea>
+    <ul class="k-problems" id="kProblems"></ul>
+    <div class="k-row"><span class="muted small">From the markers shown above</span><button class="btn primary" id="kCopy">Copy chapters</button></div>
+
+    <h4 class="k-h">Batch <span class="muted small">· ticked markers, or all shown</span></h4>
+    <div class="k-grid">
+      <span class="k-pair"><select id="kRecolour"></select><button class="btn" id="kDoRecolour">Recolour</button></span>
+      <span class="k-pair"><input type="text" id="kPrefix" value="Chapter"><button class="btn" id="kDoNumber">Number</button></span>
+      <span class="k-pair"><input type="number" id="kShift" value="1" step="0.5"><button class="btn" id="kDoShift">Shift s</button></span>
+      <span class="k-pair"><button class="btn" id="kDoSnap">Snap to cuts</button><button class="btn" id="kDoDedupe">Remove duplicates</button></span>
+      <span class="k-pair"><button class="btn danger" id="kDoDelete">Delete</button></span>
+    </div>
+
+    <h4 class="k-h">Into edits</h4>
+    <div class="k-row"><label class="mini-check"><input type="checkbox" id="kEvery"> Every track (not only targeted)</label><button class="btn" id="kDoCut">Cut at markers</button></div>
+
+    <h4 class="k-h">Files</h4>
+    <div class="k-row wrap"><span class="muted small">Export</span>
+      <span class="btns"><button class="btn" data-x="csv">CSV</button><button class="btn" data-x="txt">TXT</button><button class="btn" data-x="srt">SRT</button><button class="btn" data-x="json">JSON</button></span></div>
+    <textarea class="k-text" id="kImport" rows="3" placeholder="Paste chapters or timecodes to import, e.g.&#10;0:00 Intro&#10;1:15 Setup"></textarea>
+    <div class="k-row"><span class="muted small" id="kImportInfo">Also reads HaloCut's own CSV</span><button class="btn" id="kDoImport">Add as markers</button></div>
+
+    <div class="foot"><span class="sum" id="kSum"><span class="dot"></span><span id="kSumText">Open a sequence, then Refresh</span></span></div>
+  </section>
+
+  <p class="copy">HaloCut Markers · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="markers-core.js"></script>
+  <script src="main.js"></script>
+  <script src="markers.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

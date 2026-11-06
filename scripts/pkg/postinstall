@@ -1,0 +1,35 @@
+#!/bin/sh
+# HaloCut installer: put the Adobe panels in place for the person installing, let Premiere Pro and
+# After Effects load them, and start HaloCut. Runs as root; everything personal is done as that person.
+# © 2026 Imtayz Nayem
+
+APP="/Applications/HaloCut.app"
+SRC="$APP/Contents/Resources/extension"
+ID="com.samistudio.halocut"
+
+USER_NAME=$(/usr/bin/stat -f%Su /dev/console)
+if [ -z "$USER_NAME" ] || [ "$USER_NAME" = "root" ] || [ "$USER_NAME" = "loginwindow" ]; then exit 0; fi # nobody logged in
+USER_HOME=$(/usr/bin/dscl . -read "/Users/$USER_NAME" NFSHomeDirectory | /usr/bin/awk '{print $2}')
+USER_ID=$(/usr/bin/id -u "$USER_NAME")
+as_user() { /bin/launchctl asuser "$USER_ID" /usr/bin/sudo -u "$USER_NAME" "$@"; }
+
+# The panels: Premiere Pro and After Effects look in the person's own CEP extensions folder.
+DEST_DIR="$USER_HOME/Library/Application Support/Adobe/CEP/extensions"
+DEST="$DEST_DIR/$ID"
+if [ -L "$DEST" ]; then
+  : # a developer link to the source folder: leave it, so work in progress keeps showing
+elif [ -d "$SRC" ]; then
+  as_user /bin/mkdir -p "$DEST_DIR"
+  /bin/rm -rf "$DEST"
+  /usr/bin/ditto "$SRC" "$DEST"
+  /usr/sbin/chown -R "$USER_NAME" "$DEST"
+fi
+
+# HaloCut's panels aren't signed by Adobe's tool yet, so Premiere Pro and After Effects need this to load them.
+for v in 9 10 11 12 13; do
+  as_user /usr/bin/defaults write "com.adobe.CSXS.$v" PlayerDebugMode 1
+done
+
+# Start HaloCut (it lives in the menu bar).
+as_user /usr/bin/open "$APP" 2>/dev/null
+exit 0

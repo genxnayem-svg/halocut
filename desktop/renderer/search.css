@@ -1,0 +1,61 @@
+/* HaloCut Quick search. © 2026 Imtayz Nayem */
+:root {
+  --bg: rgba(24, 19, 28, .97); --line: rgba(255, 255, 255, .09); --text: #efebf4; --muted: #9d95a9;
+  --a1: #ff8a3d; --a2: #e8457c; --bad: #ff6b6b;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+body { font: 13px/1.4 -apple-system, "Segoe UI", Inter, sans-serif; color: var(--text); padding: 10px; }
+
+.panel {
+  height: 100%; display: flex; flex-direction: column; border-radius: 16px; background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, .12); box-shadow: 0 22px 60px rgba(0, 0, 0, .55), 0 0 0 .5px rgba(0, 0, 0, .6);
+  overflow: hidden;
+}
+.top { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; }
+.glass { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--a1); stroke-width: 2; stroke-linecap: round; }
+#q {
+  flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--text);
+  font: 500 19px/1.3 -apple-system, "Segoe UI", Inter, sans-serif;
+}
+#q::placeholder { color: rgba(239, 235, 244, .38); }
+.app {
+  flex: none; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--a1);
+  border: 1px solid rgba(255, 138, 61, .45); border-radius: 999px; padding: 2px 9px;
+}
+
+.tabs { display: flex; gap: 4px; padding: 0 12px 10px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: none; border: 0; background: none; color: var(--muted); font: 600 11.5px/1 -apple-system, "Segoe UI", Inter, sans-serif;
+  padding: 6px 10px; border-radius: 999px; cursor: pointer;
+}
+.tab:hover { color: var(--text); background: rgba(255, 255, 255, .06); }
+.tab.on { color: #fff; background: linear-gradient(90deg, rgba(255, 138, 61, .35), rgba(232, 69, 124, .3)); }
+
+.error { margin: 10px 14px 0; padding: 8px 12px; border-radius: 10px; background: rgba(255, 107, 107, .12); color: #ffc2c2; border: 1px solid rgba(255, 107, 107, .35); }
+
+.list { flex: 1; overflow-y: auto; padding: 6px; }
+.list::-webkit-scrollbar { width: 9px; }
+.list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .12); border-radius: 9px; border: 2px solid transparent; background-clip: padding-box; }
+.row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; cursor: pointer; }
+.row.on { background: linear-gradient(90deg, rgba(255, 138, 61, .22), rgba(232, 69, 124, .14)); box-shadow: inset 0 0 0 1px rgba(255, 138, 61, .45); }
+.ic { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; color: rgba(239, 235, 244, .8); }
+.txt { flex: 1; min-width: 0; }
+.txt b { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txt b mark { background: none; color: var(--a1); }
+.txt small { display: block; color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { flex: none; font-size: 10.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+.row.recent .tag::before { content: "↺ "; color: var(--a1); }
+.section { color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 8px 10px 4px; }
+
+.empty { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); padding: 20px 30px; }
+
+.foot { display: flex; align-items: center; gap: 14px; padding: 8px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+.foot kbd {
+  font: 600 10px/1 -apple-system, "Segoe UI", Inter, sans-serif; color: var(--text); background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .12); border-radius: 4px; padding: 2px 4px; margin-right: 3px;
+}
+.foot .count { margin-left: auto; }
+body.busy .list { opacity: .5; pointer-events: none; }

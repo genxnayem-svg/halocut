@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Flow</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="flow.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Flow</span></div>
+      <div class="host" id="host">After Effects</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="8" height="12" rx="1.5"/><rect x="13" y="6" width="8" height="12" rx="1.5"/><path d="M9 12h6M13 10l2 2-2 2"/></svg></span>
+      <span class="pill">FLOW · AE</span>
+    </div>
+    <p class="lead">Transitions between layers.</p>
+    <p class="hint">Select two or more layers that follow each other in time. HaloCut adds its own effects to them, named "HaloCut Flow", so your own effects and transform stay as they are.</p>
+
+    <div class="f-stage"><canvas id="fStage"></canvas></div>
+
+    <div class="section">At the cut</div>
+    <div class="chips" id="fCut"></div>
+    <div class="section">Over an overlap <span class="muted small">· the later layer goes on top</span></div>
+    <div class="chips" id="fOver"></div>
+    <div class="chips" id="fDirs"></div>
+
+    <label class="row"><span>Duration</span><span class="inline"><input type="range" id="fDur" min="0.2" max="2" step="0.05" value="0.6"><b id="fDurOut"></b></span></label>
+    <label class="row" id="fStrRow"><span>Strength</span><span class="inline"><input type="range" id="fStr" min="0.3" max="2" step="0.05" value="1"><b id="fStrOut"></b></span></label>
+
+    <div class="foot">
+      <span class="sum" id="fSum"><span class="dot"></span><span id="fSumText">Select the layers, pick a transition, Apply</span></span>
+      <span class="btns"><button class="btn" id="fRemove" title="Removes the HaloCut Flow effects from the selected layers">Remove</button><button class="btn primary" id="fApply">Apply</button></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Flow · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="trans-core.js"></script>
+  <script src="flow-core.js"></script>
+  <script src="main.js"></script>
+  <script src="flow.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

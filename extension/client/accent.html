@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Accents</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="accent.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Accents</span></div>
+      <div class="host" id="host">After Effects</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg></span>
+      <span class="pill">ACCENTS · AE</span>
+    </div>
+    <p class="lead">Little motion accents, ready to time.</p>
+    <p class="hint">Each accent is a shape layer of its own, already animated with keyframes from the playhead. Change its colour, size or timing in After Effects like any shape.</p>
+
+    <div class="a-stage"><canvas id="aStage"></canvas></div>
+    <div class="a-tiles" id="aTiles"></div>
+
+    <label class="row"><span>Colour</span><input type="color" id="aColour" value="#ff8a3d"></label>
+    <label class="row"><span>Size</span><span class="inline"><input type="range" id="aSize" min="40" max="400" step="5" value="140"><b id="aSizeOut"></b></span></label>
+    <label class="row"><span>Line width</span><span class="inline"><input type="range" id="aWidth" min="2" max="40" step="1" value="10"><b id="aWidthOut"></b></span></label>
+    <label class="row"><span>Length</span><span class="inline"><input type="range" id="aSecs" min="0.3" max="3" step="0.05" value="1"><b id="aSecsOut"></b></span></label>
+    <div class="row"><span>Where</span><div class="chips" id="aWhere"></div></div>
+
+    <div class="foot">
+      <span class="sum" id="aSum"><span class="dot"></span><span id="aSumText">Pick an accent, then add it</span></span>
+      <button class="btn primary" id="aAdd">Add at the playhead</button>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Accents · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="accent-core.js"></script>
+  <script src="main.js"></script>
+  <script src="accent.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

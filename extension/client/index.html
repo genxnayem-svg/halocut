@@ -1,0 +1,204 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Studio</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Studio</span></div>
+      <div class="host" id="host">Bridge</div>
+    </div>
+  </header>
+
+  <div class="status" id="status">
+    <span class="dot"></span>
+    <span id="statusText">Looking for the HaloCut app…</span>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="silence" class="on">Silence</button>
+    <button data-tab="captions">Captions</button>
+    <button data-tab="guides">Guides</button>
+    <button data-tab="timeline">Timeline</button>
+    <button data-tab="effects">Effects</button>
+  </nav>
+
+  <!-- Silence -->
+  <section class="tab" id="tab-silence">
+    <div class="card-top"><span class="tile"><svg viewBox="0 0 24 24"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2M21 12h0"/></svg></span><span class="pill">SILENCE</span></div>
+    <p class="lead">Cut every pause. Keep the music.</p>
+    <p class="hint">Select clips on the timeline and press Analyse. HaloCut reads their sound on this computer and marks every pause. Nothing changes until you press Remove.</p>
+
+    <button class="btn primary wide" id="analyse">Analyse selected clips</button>
+
+    <div class="wave" id="waveBox" hidden>
+      <canvas id="wave"></canvas>
+      <div class="wave-foot"><span id="waveFrom"></span><span class="muted small">click a pause to keep it</span><span id="waveTo"></span></div>
+    </div>
+
+    <div class="sliders">
+      <label><span>Quieter than</span><input type="range" id="th" min="-70" max="-20" step="1" value="-40"><b id="thOut"></b></label>
+      <label><span>Pauses from</span><input type="range" id="min" min="0.15" max="2" step="0.05" value="0.4"><b id="minOut"></b></label>
+      <label><span>Keep around speech</span><input type="range" id="keep" min="0" max="0.5" step="0.02" value="0.12"><b id="keepOut"></b></label>
+    </div>
+
+    <div class="presets">
+      <button data-p="gentle">Gentle</button>
+      <button data-p="normal" class="on">Normal</button>
+      <button data-p="tight">Tight</button>
+    </div>
+
+    <label class="row">
+      <span>Leave this audio track alone<small>For a music bed under the voice</small></span>
+      <select id="music"><option value="-1">None</option></select>
+    </label>
+    <label class="row">
+      <span>Keep a copy of the sequence</span>
+      <input type="checkbox" id="copy" checked>
+    </label>
+
+    <div class="foot">
+      <span class="sum" id="sum"><span class="dot"></span>Nothing analysed yet</span>
+      <button class="btn primary" id="remove" disabled>Remove pauses</button>
+    </div>
+  </section>
+
+  <!-- Captions -->
+  <section class="tab" id="tab-captions" hidden>
+    <div class="card-top"><span class="tile"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 10.5a2 2 0 1 0 0 3M17 10.5a2 2 0 1 0 0 3"/></svg></span><span class="pill">CAPTIONS</span></div>
+    <p class="lead">Captions that read right.</p>
+    <p class="hint">Transcribed on this computer with Whisper: nothing is uploaded. Hinglish comes out in Roman letters with one spelling per word; English words are never changed.</p>
+
+    <label class="row"><span>Language</span><select id="cLang"></select></label>
+    <label class="row"><span>Model</span><select id="cModel"></select></label>
+    <label class="row"><span>Words per line<small>Longest caption line, in characters</small></span>
+      <span class="inline"><input type="range" id="cChars" min="12" max="48" step="2" value="32"><b id="cCharsOut"></b></span></label>
+
+    <button class="btn primary wide" id="cGo">Transcribe selected clips</button>
+
+    <div class="lines" id="cLines" hidden></div>
+
+    <div class="fix" id="cFix" hidden>
+      <div class="fix-row"><input type="text" id="cFrom" placeholder="mouse click"><span>→</span><input type="text" id="cTo" placeholder="HaloCut"></div>
+      <div class="fix-row"><label><input type="checkbox" id="cRemember" checked> Remember this fix</label><button class="btn" id="cReplace">Replace all</button></div>
+    </div>
+
+    <div class="foot">
+      <span class="sum" id="cSum"><span class="dot"></span><span id="cSumText">Select clips, then Transcribe</span></span>
+      <span class="btns">
+        <button class="btn" id="cSave" disabled>Save .srt</button>
+        <button class="btn primary" id="cAdd" disabled>Add to timeline</button>
+      </span>
+    </div>
+  </section>
+
+  <!-- Guides -->
+  <section class="tab" id="tab-guides" hidden>
+    <div class="card-top"><span class="tile"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M7 7h10M7 17h10M12 3v18"/></svg></span><span class="pill">SAFE ZONES</span></div>
+    <p class="lead">Know where the app's buttons will land.</p>
+    <p class="hint">Draws the platform's buttons, captions and safe zone over your video, on a track of its own. Your footage is never moved or changed.</p>
+
+    <div class="chips" id="gPresets"></div>
+
+    <div class="g-stage"><canvas id="gPreview"></canvas></div>
+    <div class="g-margins" id="gMargins"></div>
+
+    <div class="toggles">
+      <label><input type="checkbox" id="gZone" checked> Safe zone</label>
+      <label><input type="checkbox" id="gUi" checked> App buttons</label>
+      <label><input type="checkbox" id="gCentre"> Centre lines</label>
+      <label><input type="checkbox" id="gThirds"> Thirds</label>
+      <label><input type="checkbox" id="gGrid"> Grid</label>
+    </div>
+
+    <div class="warn" id="gWarn" hidden>Guides showing: hide or remove them before you export.</div>
+
+    <div class="foot">
+      <span class="sum" id="gSum"><span class="dot"></span><span id="gFrame">1080 × 1920</span></span>
+      <span class="btns">
+        <button class="btn" id="gToggle" disabled>Hide</button>
+        <button class="btn" id="gRemove" disabled>Remove</button>
+        <button class="btn primary" id="gAdd">Add guides</button>
+      </span>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="tab" id="tab-timeline" hidden>
+    <div class="card-top"><span class="tile"><svg viewBox="0 0 24 24"><path d="M3 7h10M3 12h14M3 17h7"/><path d="M16 4v16" stroke-dasharray="2 2"/></svg></span><span class="pill">TIMELINE</span></div>
+    <p class="lead">One-press timeline jobs.</p>
+    <p class="hint">Each one works on the open sequence. The sound stays in sync with the picture.</p>
+
+    <div class="job">
+      <div><b>Close gaps</b><span>Only where every track is empty, so nothing slips out of sync.</span></div>
+      <button class="btn" data-job="closeGaps">Close gaps</button>
+    </div>
+    <div class="job">
+      <div><b>Zoom every other clip</b><span>Jump cuts read like a second camera. Selected clips, or V1.</span>
+        <span class="inline"><input type="range" id="tZoom" min="105" max="140" step="1" value="115"><b id="tZoomOut"></b></span></div>
+      <span class="stack"><button class="btn" data-job="zoomIn">Punch in</button><button class="btn" data-job="zoomBack">Back out</button></span>
+    </div>
+    <div class="job">
+      <div><b>Copy frame</b><span>The frame under the playhead, ready to paste into Photoshop, Figma or WhatsApp.</span></div>
+      <button class="btn" data-job="copyFrame">Copy frame</button>
+    </div>
+    <div class="job">
+      <div><b>Paste image</b><span>A picture you copied, at the playhead for 5 seconds, on a free track.</span></div>
+      <button class="btn" data-job="pasteImage">Paste</button>
+    </div>
+    <div class="job">
+      <div><b>Unnest <em class="beta">beta</em></b><span>Select a nested sequence: its clips come back where it was, trimmed as it played them. Effects inside the nest don't come along yet.</span>
+        <label class="mini-check"><input type="checkbox" id="tCopy" checked> Keep a copy of the sequence</label></div>
+      <button class="btn" data-job="unnest">Unnest</button>
+    </div>
+
+    <div class="foot"><span class="sum" id="tSum"><span class="dot"></span><span id="tSumText">Pick a job</span></span></div>
+  </section>
+
+  <!-- Effects -->
+  <section class="tab" id="tab-effects" hidden>
+    <div class="card-top"><span class="tile"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.2-4.2"/></svg></span><span class="pill">SEARCH EFFECTS</span></div>
+    <p class="lead">Type four letters. Enter.</p>
+    <div class="search-box">
+      <label class="search-field">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.2-4.2"/></svg>
+        <input type="text" id="eQuery" placeholder="Search effects and transitions" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="results" id="eResults"></div>
+      <div class="added" id="eAdded" hidden></div>
+      <div class="keys"><kbd>Enter</kbd> apply <kbd>Shift + Enter</kbd> apply and pin</div>
+    </div>
+    <p class="hint small" id="eCount">Reading your installed effects…</p>
+  </section>
+
+  <section class="tab" id="tab-soon" hidden>
+    <p class="lead" id="soonTitle"></p>
+    <p class="hint">Coming to HaloCut Studio next.</p>
+  </section>
+
+  <div class="section">Last commands</div>
+  <ul id="log"></ul>
+  <p class="copy">HaloCut Studio · © 2026 Imtayz Nayem</p>
+
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="silence.js"></script>
+  <script src="guides.js"></script>
+  <script src="captions.js"></script>
+  <script src="effect-search.js"></script>
+  <script src="main.js"></script>
+  <script src="studio.js"></script>
+  <script src="studio-guides.js"></script>
+  <script src="studio-captions.js"></script>
+  <script src="studio-timeline.js"></script>
+  <script src="studio-effects.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

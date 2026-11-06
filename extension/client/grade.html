@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Grade</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="grade.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Grade</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M12 12l7.4-4.2M12 12 4.6 7.8"/></svg></span>
+      <span class="pill">GRADE</span>
+    </div>
+    <p class="lead">Grade on a grabbed frame.</p>
+    <p class="hint">Click to fix the colour, watch the scopes, then Apply. The values go into the clip's own Lumetri Color, so you can keep working there.</p>
+
+    <div class="s-label"><span id="gName">Frame at the playhead</span><button class="btn small" id="gGrab">Grab frame</button></div>
+    <div class="g-stage"><canvas id="gStage"></canvas></div>
+    <div class="g-bar">
+      <div class="chips" id="gViews"></div>
+      <label class="mini-check"><input type="checkbox" id="gFalse"> False colour</label>
+    </div>
+    <div class="g-bar">
+      <span class="muted small">Click to set</span>
+      <div class="chips" id="gPicks"></div>
+    </div>
+
+    <div class="g-scope"><canvas id="gScope"></canvas></div>
+    <div class="chips" id="gScopes"></div>
+
+    <div class="section">Looks</div>
+    <div class="chips" id="gLooks"></div>
+
+    <div class="section">Light</div>
+    <div class="sliders" id="gLight"></div>
+    <div class="section">Colour</div>
+    <div class="sliders" id="gColour"></div>
+    <div class="section">Finish</div>
+    <div class="sliders" id="gFinish"></div>
+
+    <div class="section">Match another shot</div>
+    <div class="g-match">
+      <div class="g-ref" id="gRef"><span>No reference</span></div>
+      <div class="g-match-btns">
+        <button class="btn small" id="gRefGrab" title="Uses the frame at the playhead, as it looks now">Frame at playhead</button>
+        <button class="btn small" id="gRefLoad">Load a picture…</button>
+        <button class="btn small" id="gMatch" disabled>Match to it</button>
+      </div>
+    </div>
+    <input type="file" id="gFile" accept="image/*" hidden>
+
+    <div class="foot">
+      <span class="sum" id="gSum"><span class="dot"></span><span id="gSumText">Grab a frame to start</span></span>
+      <span class="btns"><button class="btn" id="gReset" title="Sliders back to neutral (Apply to write it)">Reset</button><button class="btn" id="gCube" title="Saves this grade as a .cube LUT">.cube</button><button class="btn primary" id="gApply">Apply</button></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Grade · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="grade-core.js"></script>
+  <script src="main.js"></script>
+  <script src="grade.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

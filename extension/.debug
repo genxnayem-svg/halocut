@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionList>
+  <Extension Id="com.samistudio.halocut.bg">
+    <HostList>
+      <Host Name="PPRO" Port="8100"/>
+      <Host Name="AEFT" Port="8101"/>
+    </HostList>
+  </Extension>
+  <Extension Id="com.samistudio.halocut.bridge">
+    <HostList>
+      <Host Name="PPRO" Port="8098"/>
+      <Host Name="AEFT" Port="8099"/>
+    </HostList>
+  </Extension>
+</ExtensionList>

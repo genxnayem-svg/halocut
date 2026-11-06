@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Split</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="split.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Split</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M6 10h12"/></svg></span>
+      <span class="pill">SPLIT</span>
+    </div>
+    <p class="lead">Split screens and reframes, as a real sequence.</p>
+    <p class="hint">Choose what each pane shows and where it goes. Build makes a new sequence; your sequence stays untouched.</p>
+
+    <div class="s-label"><span>Source · what each pane shows</span><button class="btn small" id="sGrab">Grab frame</button></div>
+    <div class="s-stage"><canvas id="sSource"></canvas></div>
+    <p class="hint small">Drag a window to move it · scroll on it to zoom</p>
+
+    <div class="s-label"><span>New frame · where it goes</span></div>
+    <div class="chips" id="sFrames"></div>
+    <div class="s-out"><canvas id="sOut"></canvas></div>
+
+    <div class="chips" id="sLayouts"></div>
+    <label class="row"><span>Gap between panes</span><span class="inline"><input type="range" id="sGap" min="0" max="80" step="2" value="0"><b id="sGapOut"></b></span></label>
+    <div class="s-panes" id="sPanes"></div>
+
+    <div class="foot">
+      <span class="sum" id="sSum"><span class="dot"></span><span id="sSumText">Grab a frame, place the windows, then Build</span></span>
+      <button class="btn primary" id="sBuild">Build sequence</button>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Split · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="split-core.js"></script>
+  <script src="main.js"></script>
+  <script src="split.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

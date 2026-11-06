@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HaloCut installer layout. VERSION is filled in by make-pkg.sh. © 2026 Imtayz Nayem -->
+<installer-gui-script minSpecVersion="2">
+  <title>HaloCut</title>
+  <welcome file="welcome.html" mime-type="text/html"/>
+  <license file="license.txt" mime-type="text/plain"/>
+  <conclusion file="conclusion.html" mime-type="text/html"/>
+  <options customize="never" require-scripts="true" hostArchitectures="arm64"/>
+  <domains enable_localSystem="true"/>
+  <choices-outline>
+    <line choice="default"><line choice="com.samistudio.halocut"/></line>
+  </choices-outline>
+  <choice id="default"/>
+  <choice id="com.samistudio.halocut" visible="false"><pkg-ref id="com.samistudio.halocut"/></choice>
+  <pkg-ref id="com.samistudio.halocut" version="VERSION" onConclusion="none">HaloCut-app.pkg</pkg-ref>
+</installer-gui-script>

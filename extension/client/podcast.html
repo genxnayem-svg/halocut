@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Podcast</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="podcast.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Podcast</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="6" height="11" rx="3"/><path d="M5 11a6 6 0 0 0 12 0M11 17v4M8 21h6"/></svg></span>
+      <span class="pill">PODCAST</span>
+    </div>
+    <p class="lead">Cut to whoever is talking.</p>
+    <p class="hint">Stack the camera angles on their own video tracks, each with its mic on an audio track. HaloCut listens to the mics and switches the cameras for you.</p>
+
+    <div class="tabs" id="pTabs"><button data-tab="cam" class="on">Auto camera</button><button data-tab="duck">Duck music</button></div>
+
+    <div data-pane="cam">
+      <div class="section">Cameras</div>
+      <div class="p-cams" id="pCams"></div>
+      <button class="btn small" id="pAdd">+ Add a camera</button>
+      <label class="row"><span>Wide shot<small>For two at once, and long quiet bits</small></span><select id="pWide"></select></label>
+      <label class="row"><span>Shortest shot</span><span class="inline"><input type="range" id="pMin" min="1" max="8" step="0.5"><b id="pMinOut"></b></span></label>
+      <label class="row"><span>Switch after<small>How long a new voice talks first</small></span><span class="inline"><input type="range" id="pDelay" min="0.2" max="1.5" step="0.1"><b id="pDelayOut"></b></span></label>
+      <label class="row" id="pAfterRow"><span>Wide after quiet</span><span class="inline"><input type="range" id="pAfter" min="2" max="10" step="0.5"><b id="pAfterOut"></b></span></label>
+      <div class="p-strip"><canvas id="pCamStrip"></canvas></div>
+      <div class="p-legend" id="pLegend"></div>
+      <label class="row"><span>Keep a copy of the sequence first</span><input type="checkbox" id="pCopy" checked></label>
+    </div>
+
+    <div data-pane="duck" hidden>
+      <label class="row"><span>Music track</span><select id="pMusic"></select></label>
+      <div class="section">Voices</div>
+      <div class="p-voices" id="pVoices"></div>
+      <label class="row"><span>Dip by</span><span class="inline"><input type="range" id="pDepth" min="4" max="30" step="1"><b id="pDepthOut"></b></span></label>
+      <label class="row"><span>Fade down</span><span class="inline"><input type="range" id="pAttack" min="0.1" max="1.5" step="0.05"><b id="pAttackOut"></b></span></label>
+      <label class="row"><span>Fade back up</span><span class="inline"><input type="range" id="pRelease" min="0.2" max="3" step="0.1"><b id="pReleaseOut"></b></span></label>
+      <div class="p-strip"><canvas id="pDuckStrip"></canvas></div>
+      <p class="hint small">Replaces any volume keyframes already on the music clips.</p>
+    </div>
+
+    <div class="foot">
+      <span class="sum" id="pSum"><span class="dot"></span><span id="pSumText">Pick the cameras and their mics, then Listen</span></span>
+      <span class="btns"><button class="btn" id="pAlt" hidden>Clear</button><button class="btn" id="pListen">Listen</button><button class="btn primary" id="pApply" disabled>Apply</button></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Podcast · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="silence.js"></script>
+  <script src="podcast-core.js"></script>
+  <script src="main.js"></script>
+  <script src="podcast.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

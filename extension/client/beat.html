@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Beat</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="markers.css">
+  <link rel="stylesheet" href="beat.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Beat</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span>
+      <span class="pill">BEAT</span>
+    </div>
+    <p class="lead">Cut to the beat of your music.</p>
+    <p class="hint">Select the music clip on the timeline and press Analyse. HaloCut listens on this computer and finds the tempo, the beats and the bars.</p>
+
+    <button class="btn primary wide" id="bGo">Analyse music</button>
+
+    <div class="b-result" id="bResult" hidden>
+      <div class="b-bpm"><b id="bBpm">120</b><span>BPM</span><em id="bConf"></em></div>
+      <span class="b-fix"><button class="btn" id="bTap" title="Tap along four times or more">Tap</button><button class="btn" id="bHalf">½×</button><button class="btn" id="bDouble">2×</button></span>
+    </div>
+    <div class="wave" id="bWaveBox" hidden><canvas id="bWave"></canvas>
+      <div class="wave-foot"><span id="bFrom"></span><span class="muted small">tall ticks start a bar</span><span id="bTo"></span></div></div>
+
+    <h4 class="k-h">Beat markers</h4>
+    <div class="k-pair"><select id="bMarkEvery"><option value="beat">Every beat</option><option value="2">Every 2 beats</option><option value="bar" selected>Every bar</option><option value="hits">Only the hits</option></select>
+      <select id="bMarkColor"></select></div>
+    <div class="k-row"><button class="btn" id="bMarkRemove">Remove beat markers</button><button class="btn" id="bMark">Add markers</button></div>
+
+    <h4 class="k-h">Cut to the beat</h4>
+    <div class="k-pair"><select id="bCutEvery"><option value="beat">Every beat</option><option value="2">Every 2 beats</option><option value="4beats" selected>Every 4 beats</option><option value="8beats">Every 8 beats</option></select></div>
+    <div class="k-row"><label class="mini-check"><input type="checkbox" id="bEvery"> Every track (not only targeted)</label><button class="btn" id="bCut">Cut at beats</button></div>
+
+    <h4 class="k-h">Pulse</h4>
+    <div class="k-pair"><select id="bPulseEvery"><option value="beat" selected>Every beat</option><option value="2">Every 2 beats</option><option value="bar">Every bar</option></select>
+      <span class="inline"><input type="range" id="bAmt" min="2" max="15" step="1" value="6"><b id="bAmtOut"></b></span></div>
+    <div class="k-row"><button class="btn" id="bPulseRemove">Remove pulse</button><button class="btn" id="bPulse">Pulse selected clips</button></div>
+
+    <div class="foot"><span class="sum" id="bSum"><span class="dot"></span><span id="bSumText">Select the music clip, then Analyse</span></span></div>
+  </section>
+
+  <p class="copy">HaloCut Beat · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="silence.js"></script>
+  <script src="beat-core.js"></script>
+  <script src="markers-core.js"></script>
+  <script src="main.js"></script>
+  <script src="beat.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

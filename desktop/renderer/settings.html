@@ -1,0 +1,437 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'">
+  <title>HaloCut</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <img class="logo-img" src="../assets/logo-128.png" alt="">
+      <div><b>HaloCut</b><span>Wheels &amp; mouse for editors</span></div>
+    </div>
+    <nav id="nav">
+      <button data-page="devices"><i data-icon="mouse"></i>Devices</button>
+      <button data-page="buttons"><i data-icon="buttons"></i>Button mapping</button>
+      <button data-page="options"><i data-icon="rings"></i>Options wheel</button>
+      <button data-page="orbit"><i data-icon="orbit"></i>Orbit switch</button>
+      <button data-page="wheel" class="on"><i data-icon="wheel"></i>Tool wheel</button>
+      <button data-page="practice"><i data-icon="play"></i>Practice</button>
+      <button data-page="shortcuts"><i data-icon="list"></i>Shortcuts</button>
+      <button data-page="appearance"><i data-icon="palette"></i>Appearance</button>
+      <button data-page="general"><i data-icon="sliders"></i>General</button>
+      <button data-page="setup"><i data-icon="help"></i>Setup &amp; help</button>
+    </nav>
+    <div class="side-foot"><span id="version"></span><span>© 2026 Imtayz Nayem</span></div>
+  </aside>
+
+  <div class="shell">
+    <header class="topbar">
+      <div class="crumb"><span class="dot" id="liveDot"></span><span id="crumb">Editing controls</span></div>
+      <div class="top-actions">
+        <button class="pill" id="pause"><i data-icon="pause"></i><span>Pause controls</span></button>
+        <button class="pill" id="quit"><i data-icon="power"></i><span>Quit HaloCut</span></button>
+      </div>
+    </header>
+
+    <div class="perm-banner" id="permBanner" hidden>
+      <div>
+        <b>No wheel can open right now: <span id="permWhat">macOS is blocking HaloCut</span></b>
+        <span>After every new install macOS needs you to allow HaloCut again, even if its switch still looks on. In <b>Accessibility</b> and <b>Input Monitoring</b>: select HaloCut, remove it with −, add it back with + (from Applications), and switch it on. The wheels start by themselves.</span>
+      </div>
+      <button class="btn primary small" id="permFix">Open Privacy settings</button>
+    </div>
+
+    <div class="apptabs" id="appTabs">
+      <button data-app="PPRO" class="on"><b class="badge pr">Pr</b>Premiere Pro</button>
+      <button data-app="AEFT"><b class="badge ae">Ae</b>After Effects</button>
+      <button data-app="other" class="only-buttons"><b class="badge ot">··</b>Other apps</button>
+      <span class="saved" id="saved">All changes saved</span>
+    </div>
+
+    <main id="pages">
+      <!-- Tool wheel -->
+      <section class="page" id="page-wheel">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <div><h2>Tool wheel</h2><p class="muted">Hold your trigger over the timeline, move onto a segment, flick out to a tool, let go. Release in the centre to cancel.</p></div>
+              <span class="tag" id="wheelApp">Premiere Pro</span>
+            </div>
+            <div class="wheel-split">
+              <div class="stage"><svg id="preview" viewBox="0 0 572 572"></svg></div>
+              <div class="wheel-side">
+                <div class="picked" id="picked">
+                  <span class="muted small">Click a tool on the wheel or in the list below to change it</span>
+                </div>
+                <h4>Trigger</h4>
+                <div id="triggers"></div>
+                <div class="row">
+                  <label>Quick tap keeps it open<small>Then click a slice to run it</small></label>
+                  <label class="switch"><input type="checkbox" id="tapToStick"><span></span></label>
+                </div>
+              </div>
+            </div>
+            <h4 class="layout-title">Layout <span class="muted" id="layoutName"></span></h4>
+            <p class="muted small layout-hint">Click a tool to move or remove it. <b>+ Add</b> puts anything from the app on the wheel: its tools and commands, every effect and transition, HaloCut looks, or any keyboard shortcut.</p>
+            <div id="segments"></div>
+            <div class="actions">
+              <button class="btn" id="addSegment">+ New segment</button>
+              <button class="btn" id="resetLayout">Reset this layout</button>
+              <button class="btn danger" id="removeApp" hidden>Remove this app</button>
+              <button class="btn" id="openConfig">Open settings file</button>
+            </div>
+          </div>
+          <div class="side-stack">
+          <div class="card quick">
+            <div class="card-head"><h3>Quick search</h3><span class="tag">Pr · Ae</span></div>
+            <p class="muted">In Premiere Pro or After Effects, press it, type an effect, transition, look or command, and press Return. It goes on the selected clips.</p>
+            <div id="searchTriggers"></div>
+          </div>
+          <div class="card help">
+            <h3>How it works</h3>
+            <ol>
+              <li>Hold the trigger in Premiere Pro, After Effects or an app you added with <b>+ Add app</b> (DaVinci Resolve, Lightroom…). The wheel opens where the pointer is.</li>
+              <li>Move onto a segment: its tools fan out in an arc. Let go on the segment itself for its main tool (outlined).</li>
+              <li>Flick out to a tool and let go. A short note by the pointer says what it did.</li>
+              <li>Tap instead of hold and the wheel stays open: click a tool, or press Esc.</li>
+            </ol>
+            <h4>Make it yours</h4>
+            <p class="muted">Every segment takes up to 12 tools, and the wheel up to 10 segments. Rename a segment by typing over its name; click its colour to change it.</p>
+            <p class="muted">Want a Premiere command that has no shortcut, like Nest or Scale to Frame Size? Give it one in Premiere Pro → Keyboard Shortcuts, then add it under <b>Any shortcut</b>.</p>
+            <h4>Tip</h4>
+            <p class="muted">Use the right button with a hold delay: a quick right-click still opens the app's own menu.</p>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Options wheel -->
+      <section class="page" id="page-options" hidden>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <div><h2>Options wheel</h2><p class="muted">Forty-eight favourites under one button, per app: 12 + 16 + 20 on three rings. Click a slice to change it.</p></div>
+              <span class="tag" id="optApp">Premiere Pro</span>
+            </div>
+            <div class="wheel-split">
+              <div class="stage"><svg id="optPreview" viewBox="0 0 600 600"></svg></div>
+              <div class="wheel-side">
+                <h4>Trigger <span class="muted small">· works in every app</span></h4>
+                <div id="optTriggers"></div>
+                <h4>Slice</h4>
+                <div id="slotEditor" class="slot-editor"></div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" id="resetOptions">Reset this wheel</button>
+            </div>
+          </div>
+          <div class="card help">
+            <h3>How it works</h3>
+            <ol>
+              <li>Hold the trigger: three rings open where the pointer is.</li>
+              <li>Move out to a slice and let go: it runs in the app in front.</li>
+              <li>Middle click steps the selection out to the next ring.</li>
+              <li>Tap instead of hold to keep it open, then click. Esc or the centre cancels.</li>
+            </ol>
+            <h4>What a slice can do</h4>
+            <p class="muted">Send keys, type text, open an app, file or link, or run an HaloCut tool in Premiere Pro or After Effects.</p>
+            <h4>On a MacBook</h4>
+            <p class="muted">F8 is a media key: press Fn + F8, or record another trigger such as a side button.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Orbit switch -->
+      <section class="page" id="page-orbit" hidden>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <div><h2>Orbit switch</h2><p class="muted">A wheel of everything you have open. Rest on an app and the wheel becomes its windows, or a browser's tabs. Works in every app; nothing to set up per app.</p></div>
+              <button class="btn small" id="orbitRefresh">Refresh</button>
+            </div>
+            <div class="wheel-split">
+              <div class="stage"><svg id="orbitPreview" viewBox="0 0 572 572"></svg></div>
+              <div class="wheel-side">
+                <h4>Trigger</h4>
+                <div id="orbitTriggers"></div>
+                <div class="row">
+                  <label>Browser tabs<small>Chrome, Edge, Brave and Safari show their tabs instead of windows. macOS asks once per browser.</small></label>
+                  <label class="switch"><input type="checkbox" id="orbitTabs"><span></span></label>
+                </div>
+                <p class="muted small" id="orbitNote"></p>
+              </div>
+            </div>
+            <h4 class="layout-title">Apps on the wheel</h4>
+            <div class="orbit-apps">
+              <div>
+                <h5>Pinned <span class="muted">· always there, in this order</span></h5>
+                <div id="orbitPinned"></div>
+                <button class="btn small" id="orbitAdd">+ Add an app</button>
+              </div>
+              <div>
+                <h5>Open now</h5>
+                <div id="orbitOpenApps"></div>
+              </div>
+            </div>
+            <div id="orbitHiddenWrap" hidden>
+              <h5>Hidden <span class="muted">· never on the wheel</span></h5>
+              <div class="chips" id="orbitHidden"></div>
+            </div>
+            <div class="row">
+              <label>Show my other open apps too<small>Off: the wheel holds only your pinned apps</small></label>
+              <label class="switch"><input type="checkbox" id="orbitOthers"><span></span></label>
+            </div>
+          </div>
+          <div class="card help">
+            <h3>Every window, one wheel</h3>
+            <ol>
+              <li>Hold the trigger anywhere. Each open app sits on the wheel with its icon; a badge shows how many windows it has.</li>
+              <li>The app you used last is the first slice, straight up: flick up and let go to jump back, like ⌘ Tab.</li>
+              <li>Rest on an app and its windows (or tabs) fan out. Let go on one to bring it to the front.</li>
+              <li>Let go in the centre to stay where you are.</li>
+            </ol>
+            <p class="muted">This preview is your real open apps right now.</p>
+            <h4>Your apps, your wheel</h4>
+            <p class="muted">Pin the apps you switch to most: they keep their place, even when they're closed (let go on one to open it). Hide the ones you never switch to, like menu-bar tools.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Button mapping -->
+      <section class="page" id="page-buttons" hidden>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><div><h2>Button mapping</h2><p class="muted">What each mouse button does in <b id="mapApp">Premiere Pro</b>. Other apps keep their own.</p></div></div>
+            <div id="profile"></div>
+          </div>
+          <div class="card help">
+            <h3>Taken over, not doubled</h3>
+            <p class="muted">A button you give an action is taken over in that app: the app no longer sees it. Buttons set to "Nothing" work as before.</p>
+            <h4>More buttons</h4>
+            <p class="muted">Gaming and vertical mice have extra buttons. Press "Record another button" and press it; it gets its own row.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Devices -->
+      <section class="page" id="page-devices" hidden>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><div><h2>Devices</h2><p class="muted">Any mouse your computer sees: wired, wireless or Bluetooth. No driver. Press each button once and it lights up.</p></div><span class="tag">Any mouse</span></div>
+            <div class="device">
+              <svg id="mouseArt" viewBox="0 0 200 300"></svg>
+              <div class="device-list" id="buttonList"></div>
+            </div>
+          </div>
+          <div class="card help">
+            <h3>What it never touches</h3>
+            <p class="muted">HaloCut changes what your buttons do. It never changes your mouse's own settings: DPI, sensor, battery and lighting stay with the mouse and its maker's app.</p>
+            <h4>Status</h4>
+            <p class="muted" id="inputState"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="page" id="page-practice" hidden>
+        <div class="grid two">
+          <div class="card practice-card">
+            <div class="timeline" id="timeline">
+              <div class="tl-head"><span>Sequence 01</span><b class="tc" id="tc">00:00:00:00</b><span class="muted mono">Zoom <span id="zoomOut">1×</span></span></div>
+              <div class="tl-ruler" id="ruler"></div>
+              <div class="tl-tracks" id="tracks"></div>
+              <div class="tl-playhead" id="playhead"></div>
+              <svg class="tl-wheel" id="practiceWheel" hidden></svg>
+              <div class="tl-hint"><span class="hint-dot"></span>Press and hold anywhere on the timeline</div>
+            </div>
+            <div class="grid three ways">
+              <div class="mini"><b>Mouse</b>Hold the left or right button, move toward a tool, let go.</div>
+              <div class="mini"><b>Click</b>A quick click on the timeline moves the playhead.</div>
+              <div class="mini"><b>Keys</b>With the wheel open, press 1 to 8 to pick a tool, Esc to cancel.</div>
+            </div>
+          </div>
+          <div class="card help">
+            <div class="card-head"><h3>History</h3><button class="btn small" id="practiceReset">Reset</button></div>
+            <ul class="history" id="history"></ul>
+            <p class="muted">Every tool you run lands here. Click a step to go back to it.</p>
+            <hr>
+            <p class="muted">This is a pretend timeline: nothing here touches your projects. In Premiere Pro the same wheel runs the real tools.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Shortcuts -->
+      <section class="page" id="page-shortcuts" hidden>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><div><h2>Shortcuts</h2><p class="muted">Everything HaloCut does for you right now, per app.</p></div><span class="tag" id="shortcutCount"></span></div>
+            <div id="shortcutList"></div>
+          </div>
+          <div class="card help">
+            <h3>How to use this</h3>
+            <p class="muted">Find what you want, then change it where it lives: triggers on Tool wheel, buttons on Button mapping. Changes save straight away and only apply when that app is in front.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Appearance -->
+      <section class="page" id="page-appearance" hidden>
+        <div class="grid look">
+          <div class="card">
+            <div class="card-head"><div><h2>Appearance</h2><p class="muted">Colours and feel for this window and every wheel. Changes show at once in the preview. Your shortcuts never change.</p></div></div>
+            <h4>Accent</h4>
+            <div class="accent-grid" id="accents" role="radiogroup" aria-label="Accent"></div>
+            <h4>Background</h4>
+            <div class="bg-grid" id="backgrounds" role="radiogroup" aria-label="Background"></div>
+            <h4>Feel</h4>
+            <div class="row">
+              <label>Soft glow behind panels<small>Turn off on a slow computer</small></label>
+              <label class="switch"><input type="checkbox" id="glow"><span></span></label>
+            </div>
+            <div class="row">
+              <label>See-through wheels<small>Your timeline shows faintly through the Tool wheel, Options wheel and Orbit switch</small></label>
+              <label class="switch"><input type="checkbox" id="glass"><span></span></label>
+            </div>
+          </div>
+          <div class="card look-preview">
+            <div class="card-head"><h3>Preview</h3><span class="tag" id="lookName"></span></div>
+            <div class="look-stage" id="lookStage">
+              <div class="look-timeline"><i></i><i></i><i></i><i></i></div>
+              <svg id="lookWheel" viewBox="0 0 572 572" aria-label="Tool wheel preview"></svg>
+            </div>
+            <p class="muted small">Your Premiere Pro Tool wheel, as it opens over the timeline.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- General -->
+      <section class="page" id="page-general" hidden>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><div><h2>General</h2><p class="muted">How HaloCut starts, how the wheels look and feel, and your settings as a file.</p></div></div>
+            <h4>Starting</h4>
+            <div class="row">
+              <label>Start HaloCut when you log in<small id="genLoginNote">It waits quietly in the menu bar</small></label>
+              <label class="switch"><input type="checkbox" id="genLogin"><span></span></label>
+            </div>
+            <div class="row">
+              <label>Open this window when HaloCut starts<small>Off: it starts in the menu bar, ready to use</small></label>
+              <label class="switch"><input type="checkbox" id="genShow"><span></span></label>
+            </div>
+            <h4>Wheels</h4>
+            <div class="row"><label>Size<small>The Tool wheel, Options wheel and Orbit switch</small></label><div class="choice" id="genSize"></div></div>
+            <div class="row"><label>Animation<small>How the wheels open and close</small></label><div class="choice" id="genAnim"></div></div>
+            <div class="row">
+              <label>Note after each action<small>The little note by the pointer once a tool has run. A problem always shows.</small></label>
+              <label class="switch"><input type="checkbox" id="genNotes"><span></span></label>
+            </div>
+            <div class="row" id="genNoteRow"><label>The note stays for</label><div class="choice" id="genNoteLen"></div></div>
+            <h4>Your settings</h4>
+            <div class="gen-btns">
+              <button class="btn" id="genExport">Save to a file…</button>
+              <button class="btn" id="genImport">Load from a file…</button>
+              <button class="btn" id="genFile">Show the settings file</button>
+            </div>
+            <div class="row gen-reset">
+              <label>Reset everything<small>Wheels, buttons, favourites, triggers and looks go back to how HaloCut starts</small></label>
+              <button class="btn" id="genReset">Reset…</button>
+            </div>
+          </div>
+          <div class="card help">
+            <h3>Moving to a new computer?</h3>
+            <p class="muted">Save your settings to a file here, then load it on the other computer. Wheels, buttons, favourites, triggers and looks all come along.</p>
+            <h4>Which size?</h4>
+            <p class="muted">Large is easier to hit on a big screen. Small keeps more of your timeline in sight while a wheel is open.</p>
+            <h4>Fewer notes</h4>
+            <p class="muted">Once you know the wheel by heart, switch the note off: the wheel closes the moment a tool runs.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Setup -->
+      <section class="page" id="page-setup" hidden>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head"><div><h2>Setup &amp; help</h2><p class="muted">Three steps, then it is in your editor.</p></div></div>
+            <div class="step" id="stepPerm">
+              <div class="num">1</div>
+              <div class="body"><b>Allow HaloCut to see the mouse and keyboard</b>
+                <span>System Settings › Privacy &amp; Security › Accessibility and Input Monitoring.</span></div>
+              <button class="btn" id="permBtn">Open settings</button>
+            </div>
+            <div class="step" id="stepExt">
+              <div class="num">2</div>
+              <div class="body"><b>Install the Premiere Pro and After Effects bridge</b>
+                <span>It starts by itself with each app; nothing to keep open.</span></div>
+              <button class="btn primary" id="installBtn">Install</button>
+            </div>
+            <div class="step" id="stepConn">
+              <div class="num">3</div>
+              <div class="body"><b>Restart Premiere Pro or After Effects once</b>
+                <span>The bridge connects within a few seconds. The optional panel is under Window › Extensions › HaloCut.</span></div>
+            </div>
+            <h4>Connections</h4>
+            <div class="conn" id="connPPRO"><span class="dot"></span><b>Premiere Pro</b><span class="muted"></span></div>
+            <div class="conn" id="connAEFT"><span class="dot"></span><b>After Effects</b><span class="muted"></span></div>
+            <div class="conn" id="connFront"><span class="dot on"></span><b>App in front</b><span class="muted"></span></div>
+            <p class="note bad" id="inputError" hidden></p>
+          </div>
+          <div class="card help">
+            <h3>Stuck?</h3>
+            <p class="muted">If the wheel doesn't open: switch HaloCut off and on again under Accessibility and Input Monitoring, then reopen it from the menu-bar icon.</p>
+            <p class="muted">If a tool says the bridge is not running: restart that Adobe app once.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Next phase -->
+      <section class="page" id="page-soon" hidden>
+        <div class="card soon-card">
+          <h2 id="soonTitle"></h2>
+          <p class="muted" id="soonText"></p>
+          <span class="tag">Coming in the next phase</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Tool wheel picker: anything from Premiere Pro / After Effects into a segment -->
+  <div class="picker" id="picker" hidden>
+    <div class="picker-box">
+      <div class="picker-head">
+        <b id="pickerTitle">Add a tool</b>
+        <button class="btn small" id="pickerRefresh" title="Ask the app for its effects again">Refresh</button>
+        <button class="btn primary small" id="pickerClose">Done</button>
+      </div>
+      <input type="text" id="pickerSearch" placeholder="Search tools, commands, effects, transitions, looks…" autocomplete="off" spellcheck="false">
+      <div class="chips picker-groups" id="pickerGroups"></div>
+      <p class="muted small picker-note" id="pickerNote"></p>
+      <div class="picker-keys" id="pickerKeys" hidden>
+        <label>Keys<span class="inline"><input type="text" id="pkKeys" placeholder="e.g. mod+shift+n"><button class="btn small" id="pkRecord">Record</button></span></label>
+        <label>Name on the wheel<input type="text" id="pkName" maxlength="24" placeholder="e.g. Nest"></label>
+        <button class="btn primary small" id="pkAdd">Add it</button>
+      </div>
+      <div class="picker-list" id="pickerList"></div>
+      <p class="muted small picker-foot">Click to add · ↑↓ ↩ · Esc closes</p>
+    </div>
+  </div>
+
+  <script src="../src/wheel-geometry.js"></script>
+  <script src="../src/options-geometry.js"></script>
+  <script src="../src/tool-catalog.js"></script>
+  <script src="../src/appearance.js"></script>
+  <script src="icons.js"></script>
+  <script src="wheel-draw.js"></script>
+  <script src="options-draw.js"></script>
+  <script src="practice.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

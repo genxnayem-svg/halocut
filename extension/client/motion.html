@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Motion</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="motion.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Motion</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="7" height="7" rx="1.5"/><rect x="14" y="5" width="7" height="7" rx="1.5"/><path d="M10 12.5c2 0 3-1 4-3.5" stroke-dasharray="2 2"/></svg></span>
+      <span class="pill">MOTION</span>
+    </div>
+    <p class="lead">Two looks. One eased move.</p>
+    <p class="hint">Set how a clip starts and how it ends. HaloCut writes the move as Premiere's own keyframes, so it plays anywhere, with no plugin.</p>
+
+    <div class="m-stage"><canvas id="mPreview"></canvas><button class="m-play" id="mPlay" title="Space">❚❚</button></div>
+
+    <div class="chips" id="mLooks"></div>
+
+    <div class="seg2" id="mWhich">
+      <button data-w="start" class="on">Start look</button>
+      <button data-w="end">End look</button>
+      <button id="mSwap" class="swap" title="Swap start and end">⇄</button>
+    </div>
+    <div class="fields" id="mFields"></div>
+
+    <div class="m-label">Easing</div>
+    <div class="chips" id="mEases"></div>
+
+    <div class="m-grid">
+      <label>Moves<select id="mDir"><option value="forward">Start to end</option><option value="reverse">End to start</option><option value="roundtrip">There and back</option></select></label>
+      <label>When<select id="mWhen"><option value="start">At the clip's start</option><option value="end">At the clip's end</option><option value="whole">Across the whole clip</option></select></label>
+    </div>
+    <label class="row" id="mLenRow"><span>Length</span><span class="inline"><input type="range" id="mLen" min="0.2" max="3" step="0.1" value="0.8"><b id="mLenOut"></b></span></label>
+
+    <div class="foot">
+      <span class="sum" id="mSum"><span class="dot"></span><span id="mSumText">Select clips, then Apply</span></span>
+      <span class="btns">
+        <button class="btn" id="mRemove">Remove</button>
+        <button class="btn primary" id="mApply">Apply to clips</button>
+      </span>
+    </div>
+    <div class="keys"><kbd>Space</kbd> play <kbd>Enter</kbd> apply · up to 40 clips, each timed to its own length</div>
+  </section>
+
+  <p class="copy">HaloCut Motion · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="motion-core.js"></script>
+  <script src="main.js"></script>
+  <script src="motion.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

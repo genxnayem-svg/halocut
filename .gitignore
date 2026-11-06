@@ -1,0 +1,19 @@
+# Installed and built: made again by npm install / scripts/make-pkg.sh
+node_modules/
+dist/
+desktop/build/
+# Speech models, whisper.cpp and its Python env: large, downloaded, not ours
+vendor/
+# macOS
+.DS_Store
+# Previews
+desktop/renderer/.preview-*.json
+# Signing material: never published
+*.p12
+*.cer
+*.pem
+*.key
+*.keychain
+*.keychain-db
+# The real project the live test must never touch (local only)
+desktop/test/.avoid

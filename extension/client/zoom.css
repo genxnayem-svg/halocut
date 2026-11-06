@@ -1,0 +1,20 @@
+/* HaloCut Zoom panel. © 2026 Imtayz Nayem */
+.s-label { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; margin: 10px 0 5px; }
+.z-stage { position: relative; border-radius: 10px; overflow: hidden; background: #07050a; border: 1px solid var(--line); }
+#zStage { display: block; width: 100%; cursor: crosshair; touch-action: none; }
+#zStage.moving { cursor: grabbing; }
+.z-play {
+  position: absolute; right: 8px; bottom: 8px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .25);
+  background: rgba(12, 9, 14, .7); color: var(--text); font-size: 11px; cursor: pointer; backdrop-filter: blur(6px);
+}
+.z-play:hover { border-color: rgba(255, 138, 61, .7); }
+.z-pane { margin-top: 4px; }
+.z-field { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
+.z-field span { color: var(--muted); font-size: 11px; }
+.z-field input {
+  background: rgba(0, 0, 0, .3); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font: inherit; font-size: 13px; outline: none;
+}
+.z-field input:focus { border-color: rgba(255, 138, 61, .65); box-shadow: 0 0 0 3px rgba(255, 138, 61, .10); }
+.row input[type=color] { width: 34px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.chips button i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.btn.small { padding: 4px 10px; font-size: 11px; }

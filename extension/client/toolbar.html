@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Toolbar</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="toolbar.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Toolbar</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="search-field">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="bSearch" type="text" placeholder="Find a tool…" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+    </div>
+    <div class="b-bar">
+      <div class="chips" id="bLayouts"></div>
+      <button class="btn small" id="bSettingsBtn" title="Punch, freeze, stair and J/L amounts">Amounts</button>
+    </div>
+    <div class="b-settings" id="bSettings" hidden>
+      <label class="row"><span>Punch in</span><span class="inline"><input type="range" id="bPunch" min="1.05" max="2" step="0.05"><b id="bPunchOut"></b></span></label>
+      <label class="row"><span>Freeze for</span><span class="inline"><input type="range" id="bFreeze" min="0.5" max="10" step="0.5"><b id="bFreezeOut"></b></span></label>
+      <label class="row"><span>Stair steps</span><span class="inline"><input type="range" id="bStair" min="1" max="30" step="1"><b id="bStairOut"></b></span></label>
+      <label class="row"><span>J / L cut</span><span class="inline"><input type="range" id="bJl" min="2" max="48" step="1"><b id="bJlOut"></b></span></label>
+    </div>
+
+    <div id="bPinnedBox"><div class="section">Pinned · keys 1–9</div><div class="b-tools" id="bPinned"></div></div>
+    <div id="bAll"></div>
+
+    <div id="bQcBox" hidden>
+      <div class="section">QC check <span class="muted" id="bQcCount"></span></div>
+      <div class="b-qc" id="bQc"></div>
+    </div>
+
+    <div class="foot">
+      <span class="sum" id="bSum"><span class="dot"></span><span id="bSumText">Click a tool · ☆ pins it to a number key</span></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Toolbar · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="icons.js"></script>
+  <script src="toolbar-core.js"></script>
+  <script src="main.js"></script>
+  <script src="toolbar.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

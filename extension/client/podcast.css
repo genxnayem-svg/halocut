@@ -1,0 +1,15 @@
+/* HaloCut Podcast panel. © 2026 Imtayz Nayem */
+.btn.small { padding: 4px 10px; font-size: 11px; }
+.row select, .p-cam select { min-width: 0; background: rgba(0, 0, 0, .3); color: var(--text); border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; font: inherit; }
+.p-cams { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.p-cam { display: grid; grid-template-columns: 22px 1fr 1fr 22px; gap: 6px; align-items: center; }
+.p-cam i { width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center; font: 700 10px ui-monospace, Menlo, monospace; font-style: normal; color: #140c10; }
+.p-cam button { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 14px; }
+.p-strip { margin-top: 8px; border-radius: 9px; overflow: hidden; border: 1px solid var(--line); background: #07050a; }
+.p-strip canvas { display: block; width: 100%; height: 46px; }
+.p-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 5px 2px; font-size: 10.5px; color: var(--muted); }
+.p-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.p-legend i { width: 9px; height: 9px; border-radius: 2px; }
+.p-voices { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 4px 0 6px; }
+.p-voices label { display: flex; align-items: center; gap: 5px; }
+.p-voices input { accent-color: var(--accent2); }

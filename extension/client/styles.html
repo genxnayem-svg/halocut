@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Caption Styles</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Caption Styles</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><path d="M4 18 9 6l5 12M5.8 14h6.4"/><path d="M15 10.5c.6-.9 1.6-1.4 2.7-1.4 1.7 0 2.8 1 2.8 2.7V18m0-4.2c-.9-.5-2-.7-3-.5-1.4.2-2.5 1-2.5 2.3 0 1.2 1 2 2.3 2 1.4 0 2.6-.8 3.2-2"/></svg></span>
+      <span class="pill">STYLES</span>
+    </div>
+    <p class="lead">Animated captions, on the video.</p>
+    <p class="hint">Each caption becomes a picture on a track of its own, timed to the words. Your footage isn't touched.</p>
+
+    <div class="section">1 · Words</div>
+    <div class="y-row">
+      <select id="yLang" title="Language"></select>
+      <select id="yModel" title="Speech model"></select>
+    </div>
+    <div class="y-btns">
+      <button class="btn primary small" id="yListen">Transcribe selected clips</button>
+      <button class="btn small" id="yLast" title="The words from HaloCut Studio's last Captions run">Last Studio words</button>
+      <button class="btn small" id="ySrt">Load .srt</button>
+    </div>
+    <input type="file" id="ySrtFile" accept=".srt" hidden>
+
+    <div class="s-label"><span id="yStageLabel">Preview</span><button class="btn small" id="yGrab">Grab frame</button></div>
+    <div class="y-stage"><canvas id="yStage"></canvas><button class="z-play" id="yPlay" title="Play the preview">❚❚</button></div>
+
+    <div class="section">2 · Look</div>
+    <div class="chips" id="yFamilies"></div>
+    <div class="y-tiles" id="yTiles"></div>
+
+    <div class="section">3 · Adjust</div>
+    <label class="row"><span>Font</span><select id="yFont"></select></label>
+    <label class="row" id="yCustomRow" hidden><span>Font name</span><input type="text" id="yCustom" placeholder="e.g. Bebas Neue"></label>
+    <label class="row"><span>Size</span><span class="inline"><input type="range" id="ySize" min="0.6" max="1.8" step="0.05"><b id="ySizeOut"></b></span></label>
+    <label class="row"><span>Height</span><span class="inline"><input type="range" id="yY" min="0.1" max="0.95" step="0.01"><b id="yYOut"></b></span></label>
+    <label class="row" id="yCharsRow"><span>Letters per caption</span><span class="inline"><input type="range" id="yChars" min="12" max="50" step="1"><b id="yCharsOut"></b></span></label>
+    <label class="row" id="yWordsRow"><span>Words at a time</span><span class="inline"><input type="range" id="yWords" min="1" max="4" step="1"><b id="yWordsOut"></b></span></label>
+    <div class="row"><span>Letters</span><div class="chips" id="yCase"></div></div>
+    <div class="row"><span>Arrives with</span><div class="chips" id="yMotion"></div></div>
+    <label class="row"><span>Text colour</span><input type="color" id="yFill"></label>
+    <label class="row" id="yAccentRow"><span>Highlight colour</span><input type="color" id="yAccent"></label>
+
+    <div class="section">Captions <span class="muted" id="yCount"></span></div>
+    <div class="lines" id="yLines" hidden></div>
+
+    <label class="mini-check"><input type="checkbox" id="yReplace" checked> Replace styled captions already in the sequence</label>
+    <div class="foot">
+      <span class="sum" id="ySum"><span class="dot"></span><span id="ySumText">Get the words first</span></span>
+      <span class="btns"><button class="btn" id="yRemove" title="Removes HaloCut styled captions from the sequence">Remove</button><button class="btn primary" id="yGo">Put on video</button></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Caption Styles · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="silence.js"></script>
+  <script src="captions.js"></script>
+  <script src="styles-core.js"></script>
+  <script src="main.js"></script>
+  <script src="styles.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

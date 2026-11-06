@@ -1,0 +1,23 @@
+/* HaloCut Caption Styles panel. © 2026 Imtayz Nayem */
+.s-label { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; margin: 12px 0 5px; }
+.btn.small { padding: 5px 10px; font-size: 11px; }
+.y-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
+.y-row select, .row select, .row input[type=text] {
+  min-width: 0; background: rgba(0, 0, 0, .3); color: var(--text); border: 1px solid var(--line); border-radius: 7px; padding: 5px 6px; font: inherit;
+}
+.row input[type=text] { width: 150px; }
+.y-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.y-stage { position: relative; border-radius: 10px; overflow: hidden; background: #07050a; border: 1px solid var(--line); display: grid; place-items: center; }
+#yStage { display: block; max-width: 100%; }
+.z-play {
+  position: absolute; right: 8px; bottom: 8px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .25);
+  background: rgba(12, 9, 14, .7); color: var(--text); font-size: 11px; cursor: pointer;
+}
+.y-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.y-tile { border-radius: 10px; border: 1px solid var(--line); padding: 0; overflow: hidden; background: #0c0a10; cursor: pointer; text-align: left; color: var(--muted); font: inherit; }
+.y-tile canvas { display: block; width: 100%; height: 64px; }
+.y-tile span { display: block; padding: 4px 8px 5px; font-size: 10.5px; }
+.y-tile.on { border-color: rgba(255, 138, 61, .8); box-shadow: 0 0 0 2px rgba(255, 138, 61, .18); color: var(--text); }
+.row .chips { margin: 0; justify-content: flex-end; }
+.row input[type=color] { width: 34px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.mini-check { margin-top: 10px; }

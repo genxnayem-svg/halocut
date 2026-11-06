@@ -1,0 +1,4 @@
+/* HaloCut Flow panel. © 2026 Imtayz Nayem */
+.f-stage { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #07050a; }
+#fStage { display: block; width: 100%; aspect-ratio: 16 / 9; }
+#fDirs:empty { display: none; }

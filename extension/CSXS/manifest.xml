@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest Version="11.0" ExtensionBundleId="com.samistudio.halocut"
+                   ExtensionBundleVersion="0.1.1" ExtensionBundleName="HaloCut"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ExtensionList>
+    <!-- HaloCut: the one panel in Window → Extensions; every tool for the app inside it. -->
+    <Extension Id="com.samistudio.halocut.hub" Version="0.1.0" />
+    <!-- Hidden bridge: starts with the app and runs Tool wheel commands. -->
+    <Extension Id="com.samistudio.halocut.bg" Version="0.1.1" />
+    <!-- HaloCut Studio: the visible panel (Silence, and more to come). -->
+    <Extension Id="com.samistudio.halocut.bridge" Version="0.1.1" />
+    <!-- HaloCut Motion: start look, end look, the eased move as keyframes. -->
+    <Extension Id="com.samistudio.halocut.motion" Version="0.1.0" />
+    <!-- HaloCut Markers: chapters, files and cuts from sequence markers. -->
+    <Extension Id="com.samistudio.halocut.markers" Version="0.1.0" />
+    <!-- HaloCut Beat: tempo, beat markers, cuts and pulses from the music. -->
+    <Extension Id="com.samistudio.halocut.beat" Version="0.1.0" />
+    <!-- HaloCut Bins: tidy the Project panel. -->
+    <Extension Id="com.samistudio.halocut.bins" Version="0.1.0" />
+    <!-- HaloCut Transitions: keyframed transitions on cuts. -->
+    <Extension Id="com.samistudio.halocut.trans" Version="0.1.0" />
+    <!-- HaloCut Split: split screens and reframes built as a new sequence. -->
+    <Extension Id="com.samistudio.halocut.split" Version="0.1.0" />
+    <!-- HaloCut Zoom: zooms, frame, focus, callouts and cards for screen recordings. -->
+    <Extension Id="com.samistudio.halocut.zoom" Version="0.1.0" />
+    <!-- HaloCut Grade: click-to-grade with scopes, onto Lumetri Color. -->
+    <Extension Id="com.samistudio.halocut.grade" Version="0.1.0" />
+    <!-- HaloCut Caption Styles: animated, timed captions as pictures on the video. -->
+    <Extension Id="com.samistudio.halocut.styles" Version="0.1.0" />
+    <!-- HaloCut Retakes: fillers, stutters, false starts and mumbles, cut in sync. -->
+    <Extension Id="com.samistudio.halocut.retakes" Version="0.1.0" />
+    <!-- HaloCut Toolbar: one-click jobs, search, pins on 1–9, QC check. -->
+    <Extension Id="com.samistudio.halocut.toolbar" Version="0.1.0" />
+    <!-- HaloCut Podcast: cameras follow the voices, music dips under them. -->
+    <Extension Id="com.samistudio.halocut.podcast" Version="0.1.0" />
+    <!-- HaloCut Kit (After Effects): expression rigs and layer tools. -->
+    <Extension Id="com.samistudio.halocut.kit" Version="0.1.0" />
+    <!-- HaloCut Resize (After Effects): one comp into other sizes. -->
+    <Extension Id="com.samistudio.halocut.resize" Version="0.1.0" />
+    <!-- HaloCut Type (After Effects): kinetic type from text animators. -->
+    <Extension Id="com.samistudio.halocut.type" Version="0.1.0" />
+    <!-- HaloCut Flow (After Effects): transitions between layers. -->
+    <Extension Id="com.samistudio.halocut.flow" Version="0.1.0" />
+    <!-- HaloCut Vector (After Effects): SVG into native shape layers. -->
+    <Extension Id="com.samistudio.halocut.vector" Version="0.1.0" />
+    <!-- HaloCut Accents (After Effects): motion accents as animated shape layers. -->
+    <Extension Id="com.samistudio.halocut.accent" Version="0.1.0" />
+    <!-- HaloCut Command (Premiere Pro): search and run anything from the keyboard, combos, shortcuts. -->
+    <Extension Id="com.samistudio.halocut.command" Version="0.1.0" />
+  </ExtensionList>
+  <ExecutionEnvironment>
+    <HostList>
+      <Host Name="PPRO" Version="[22.0,99.9]" />
+      <Host Name="AEFT" Version="[22.0,99.9]" />
+    </HostList>
+    <LocaleList>
+      <Locale Code="All" />
+    </LocaleList>
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="11.0" />
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+  <DispatchInfoList>
+    <Extension Id="com.samistudio.halocut.hub">
+      <HostList>
+        <Host Name="PPRO" />
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/hub.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Menu>HaloCut</Menu>
+          <Geometry>
+            <Size><Height>860</Height><Width>380</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.bg">
+      <HostList>
+        <Host Name="PPRO" />
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/bg.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry><Size><Height>100</Height><Width>100</Width></Size></Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.bridge">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/index.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>640</Height><Width>340</Width></Size>
+            <MinSize><Height>120</Height><Width>200</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.motion">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/motion.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>760</Height><Width>340</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.markers">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/markers.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>760</Height><Width>340</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.beat">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/beat.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>720</Height><Width>340</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.bins">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/bins.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>760</Height><Width>340</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.trans">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/trans.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>680</Height><Width>340</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.split">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/split.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.zoom">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/zoom.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>860</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.grade">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/grade.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>900</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.styles">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/styles.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>900</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.retakes">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/retakes.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.toolbar">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/toolbar.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>720</Height><Width>360</Width></Size>
+            <MinSize><Height>80</Height><Width>200</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.podcast">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/podcast.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.kit">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/kit.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.resize">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/resize.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.type">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/type.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.flow">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/flow.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.vector">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/vector.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.accent">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/accent.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+    <Extension Id="com.samistudio.halocut.command">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/command.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Geometry>
+            <Size><Height>820</Height><Width>360</Width></Size>
+            <MinSize><Height>300</Height><Width>260</Width></MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+</ExtensionManifest>

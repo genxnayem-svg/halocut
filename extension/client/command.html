@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Command</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="command.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Command</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="search-field">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="kSearch" type="text" placeholder="Effects, transitions, looks, commands…" autocomplete="off" spellcheck="false">
+      <span class="k-count" id="kCount"></span>
+    </div>
+    <div class="chips k-groups" id="kGroups"></div>
+
+    <div class="k-capture" id="kCapture" hidden><b>Press the keys for <span id="kCaptureName"></span></b><small>Use ⌘, ⌃ or ⌥ with a key, or an F key · Delete clears it · Esc cancels</small></div>
+
+    <div class="k-list" id="kList"></div>
+    <div class="keys k-keys">
+      <span><kbd>↑</kbd><kbd>↓</kbd> choose</span><span><kbd>↩</kbd> run</span><span><kbd>⇧↩</kbd> add to combo</span>
+      <span><kbd>⌘⇧K</kbd> set its shortcut</span><span><kbd>Tab</kbd> next group</span>
+    </div>
+
+    <div class="k-combo" id="kCombo" hidden>
+      <div class="k-combo-top">
+        <input type="text" id="kComboName" placeholder="Name this combo" maxlength="40">
+        <button class="btn small" id="kComboClose" title="Close without saving">✕</button>
+      </div>
+      <ol class="k-steps" id="kSteps"></ol>
+      <p class="hint small" id="kComboHint">Find something above and press ⇧↩ to add it as the next step.</p>
+      <div class="btns k-row">
+        <button class="btn small" id="kComboRun">Run it once</button>
+        <button class="btn small" id="kComboDelete" hidden>Delete</button>
+        <button class="btn primary small" id="kComboSave">Save combo</button>
+      </div>
+    </div>
+    <button class="btn small k-new" id="kNewCombo">+ New combo</button>
+
+    <div class="foot">
+      <span class="sum" id="kSum"><span class="dot"></span><span id="kSumText">Type to find anything, then ↩</span></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Command · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="toolbar-core.js"></script>
+  <script src="grade-core.js"></script>
+  <script src="motion-core.js"></script>
+  <script src="trans-core.js"></script>
+  <script src="command-core.js"></script>
+  <script src="main.js"></script>
+  <script src="command.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

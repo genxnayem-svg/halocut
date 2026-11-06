@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Bins</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="markers.css">
+  <link rel="stylesheet" href="bins.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Bins</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 13h8M8 16h5"/></svg></span>
+      <span class="pill">BINS</span>
+    </div>
+    <p class="lead">A tidy project, in one press.</p>
+    <p class="hint">Sorts the Project panel, finds unused, duplicate and offline media, renames and labels. Files on disk are never touched or deleted.</p>
+
+    <div class="k-bar">
+      <button class="btn" id="nScan">Read project</button>
+      <span class="muted small" id="nCount">Not read yet</span>
+      <button class="btn right" id="nRestore" disabled title="Put back the last change HaloCut made">Restore</button>
+    </div>
+
+    <div class="chips" id="nViews">
+      <button data-v="organise" class="on">Organise</button><button data-v="unused">Unused</button><button data-v="dupes">Duplicates</button>
+      <button data-v="offline">Offline</button><button data-v="rename">Rename</button><button data-v="labels">Labels</button><button data-v="report">Report</button>
+    </div>
+
+    <div class="view" id="v-organise">
+      <h4 class="k-h">Your rules first <span class="muted small">· name contains → bin</span></h4>
+      <div id="nRules"></div>
+      <button class="btn small" id="nAddRule">+ Add a rule</button>
+      <h4 class="k-h">Then by type</h4>
+      <div class="n-types" id="nTypes"></div>
+      <label class="mini-check"><input type="checkbox" id="nUnusedBin"> Unused media to “99 Unused”</label>
+      <h4 class="k-h">Locked bins <span class="muted small">· nothing moves out</span></h4>
+      <div class="n-locks" id="nLocks"><span class="muted small">Read the project to list its bins</span></div>
+      <h4 class="k-h">Plan <span class="muted small" id="nPlanCount"></span></h4>
+      <div class="k-list" id="nPlan"></div>
+      <div class="k-row"><span></span><button class="btn primary" id="nOrganise">Organise</button></div>
+    </div>
+
+    <div class="view" id="v-unused" hidden>
+      <div class="k-list" id="nUnused"></div>
+      <div class="k-row"><select id="nUnusedLabel"></select><span class="btns"><button class="btn" id="nUnusedLabelGo">Label</button><button class="btn primary" id="nUnusedMove">Move to 99 Unused</button></span></div>
+    </div>
+
+    <div class="view" id="v-dupes" hidden>
+      <div class="k-list" id="nDupes"></div>
+      <p class="hint small">Copies go to “98 Duplicates”. Then delete them, or use Premiere's own File › Consolidate Duplicates.</p>
+      <div class="k-row"><span></span><button class="btn primary" id="nDupesMove">Move copies</button></div>
+    </div>
+
+    <div class="view" id="v-offline" hidden>
+      <div class="k-list" id="nOffline"></div>
+      <div class="k-row"><span class="muted small" id="nFound">Pick the folder the media is in now</span><span class="btns"><button class="btn" id="nPick">Choose folder…</button><button class="btn primary" id="nRelink" disabled>Relink</button></span></div>
+    </div>
+
+    <div class="view" id="v-rename" hidden>
+      <p class="hint small">Renames what is selected in the Project panel.</p>
+      <div class="n-form">
+        <input type="text" id="rFind" placeholder="Find"><input type="text" id="rReplace" placeholder="Replace with">
+        <input type="text" id="rPrefix" placeholder="Prefix"><input type="text" id="rSuffix" placeholder="Suffix">
+      </div>
+      <label class="mini-check"><input type="checkbox" id="rNumber"> Number them, from <input type="number" id="rStart" value="1" class="tiny-num"></label>
+      <div class="k-list" id="nRename"></div>
+      <div class="k-row"><button class="btn" id="rLoad">Use the selection</button><button class="btn primary" id="rGo" disabled>Rename</button></div>
+    </div>
+
+    <div class="view" id="v-labels" hidden>
+      <div class="n-types" id="nLabelMap"></div>
+      <div class="k-row"><span class="muted small" id="nLabelCount"></span><button class="btn primary" id="nLabelGo">Label by type</button></div>
+    </div>
+
+    <div class="view" id="v-report" hidden>
+      <textarea class="k-text" id="nReport" rows="11" readonly></textarea>
+      <div class="k-row"><span></span><button class="btn" id="nReportCopy">Copy as text</button></div>
+    </div>
+
+    <div class="foot"><span class="sum" id="nSum"><span class="dot"></span><span id="nSumText">Open a project, then Read project</span></span></div>
+  </section>
+
+  <p class="copy">HaloCut Bins · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="bins-core.js"></script>
+  <script src="main.js"></script>
+  <script src="bins.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

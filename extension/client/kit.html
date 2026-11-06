@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Kit</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="kit.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Kit</span></div>
+      <div class="host" id="host">After Effects</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><path d="M4 7h16v12H4zM9 7V4h6v3"/><path d="M4 12h16"/></svg></span>
+      <span class="pill">KIT · AE</span>
+    </div>
+    <p class="lead">Rigs and layer tools for After Effects.</p>
+    <p class="hint">Rigs are expressions with their own sliders in Effect Controls. Tune them here or there, bake them into keyframes, or take them off.</p>
+
+    <div class="tabs" id="kTabs"><button data-tab="rigs" class="on">Rigs</button><button data-tab="layers">Layers</button><button data-tab="project">Project</button></div>
+
+    <div data-pane="rigs">
+      <div class="chips" id="kGroups"></div>
+      <div class="k-rigs" id="kRigs"></div>
+      <div class="k-controls" id="kControls"></div>
+      <div class="btns k-row">
+        <button class="btn primary" id="kApply">Apply</button>
+        <button class="btn" id="kUpdate" title="New slider values for this rig on the selected layers">Update</button>
+        <button class="btn" id="kBake" title="Turn the rig into keyframes, one a frame">Bake</button>
+        <button class="btn" id="kRemove">Remove</button>
+      </div>
+      <div class="section">On the selected layers <button class="btn small" id="kScan">Look</button></div>
+      <div class="k-found" id="kFound"><span class="muted small">Select layers, then Look</span></div>
+    </div>
+
+    <div data-pane="layers" hidden>
+      <div class="section">Rename</div>
+      <label class="z-field"><span>Name pattern · {n} number, {name} the old name</span><input type="text" id="kPattern" placeholder="Shot {n}"></label>
+      <div class="k-two">
+        <label class="z-field"><span>Find</span><input type="text" id="kFind" placeholder="copy"></label>
+        <label class="z-field"><span>Replace with</span><input type="text" id="kReplace"></label>
+      </div>
+      <div class="k-two">
+        <label class="z-field"><span>Start at</span><input type="number" id="kStart" value="1" min="0"></label>
+        <label class="z-field"><span>Digits</span><input type="number" id="kPad" value="2" min="0" max="5"></label>
+      </div>
+      <button class="btn" id="kRename">Rename top to bottom</button>
+
+      <div class="section">Timing</div>
+      <label class="row"><span>Stagger by</span><span class="inline"><input type="range" id="kStep" min="1" max="30" step="1" value="3"><b id="kStepOut"></b></span></label>
+      <label class="row"><span>Sequence overlap</span><span class="inline"><input type="range" id="kOverlap" min="0" max="30" step="1" value="0"><b id="kOverlapOut"></b></span></label>
+      <label class="row"><span>Bottom layer first</span><input type="checkbox" id="kReverse"></label>
+      <div class="btns k-row"><button class="btn" id="kStagger">Stagger</button><button class="btn" id="kSequence">Sequence end to end</button></div>
+
+      <div class="section">Align <span class="chips k-inline" id="kAlignTo"></span></div>
+      <div class="k-align" id="kAlign"></div>
+    </div>
+
+    <div data-pane="project" hidden>
+      <p class="hint">Loose items at the top of the project go into Comps, Footage, Images, Audio and Solids folders. Items already in your own folders stay put.</p>
+      <button class="btn" id="kTidy">Tidy into folders</button>
+      <p class="hint">Removes footage no comp uses. Undo brings it back.</p>
+      <button class="btn" id="kUnused">Remove unused footage</button>
+    </div>
+
+    <div class="foot">
+      <span class="sum" id="kSum"><span class="dot"></span><span id="kSumText">Pick a rig, select layers, Apply</span></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Kit · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="kit-core.js"></script>
+  <script src="main.js"></script>
+  <script src="kit.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

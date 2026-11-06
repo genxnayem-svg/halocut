@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HaloCut Zoom</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="zoom.css">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="">
+    <div>
+      <div class="name">HaloCut <span class="accent">Zoom</span></div>
+      <div class="host" id="host">Premiere Pro</div>
+    </div>
+  </header>
+
+  <section class="tab">
+    <div class="card-top">
+      <span class="tile"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/><rect x="7.5" y="8" width="6" height="5" rx="1"/></svg></span>
+      <span class="pill">ZOOM</span>
+    </div>
+    <p class="lead">Polish for screen recordings.</p>
+    <p class="hint">Grab the frame at the playhead and draw on it. Everything lands as Premiere's own keyframes, effects and pictures, so you can still edit it there.</p>
+
+    <div class="tabs" id="zTabs">
+      <button data-tab="zoom" class="on">Zoom</button><button data-tab="frame">Frame</button><button data-tab="focus">Focus</button><button data-tab="callout">Callout</button><button data-tab="cards">Cards</button>
+    </div>
+
+    <div class="s-label"><span id="zStageLabel">Frame at the playhead</span><button class="btn small" id="zGrab">Grab frame</button></div>
+    <div class="z-stage"><canvas id="zStage"></canvas><button class="z-play" id="zPlay" title="Preview the zoom">▶</button></div>
+    <p class="hint small" id="zStageHint"></p>
+
+    <div class="z-pane" data-pane="zoom">
+      <div class="chips" id="zEase"></div>
+      <label class="row"><span>Zoom in</span><span class="inline"><input type="range" id="zIn" min="0.2" max="1.5" step="0.05"><b id="zInOut"></b></span></label>
+      <label class="row"><span>Hold</span><span class="inline"><input type="range" id="zHold" min="0" max="10" step="0.1"><b id="zHoldOut"></b></span></label>
+      <label class="row"><span>Zoom out</span><span class="inline"><input type="range" id="zOut" min="0.2" max="1.5" step="0.05"><b id="zOutOut"></b></span></label>
+    </div>
+
+    <div class="z-pane" data-pane="frame" hidden>
+      <div class="chips" id="zBgs"></div>
+      <label class="row" id="zColorRow"><span>Colour</span><input type="color" id="zColor"></label>
+      <label class="row"><span>Padding</span><span class="inline"><input type="range" id="zPad" min="0.02" max="0.2" step="0.005"><b id="zPadOut"></b></span></label>
+      <label class="row"><span>Corners</span><span class="inline"><input type="range" id="zRad" min="0" max="80" step="1"><b id="zRadOut"></b></span></label>
+      <label class="row"><span>Shadow</span><span class="inline"><input type="range" id="zShadow" min="0" max="100" step="1"><b id="zShadowOut"></b></span></label>
+    </div>
+
+    <div class="z-pane" data-pane="focus" hidden>
+      <div class="chips" id="zModes"></div>
+      <label class="row" data-mode="spot"><span>Dim</span><span class="inline"><input type="range" id="zDim" min="10" max="90" step="1"><b id="zDimOut"></b></span></label>
+      <label class="row" data-mode="spot"><span>Soft edge</span><span class="inline"><input type="range" id="zFeather" min="0" max="80" step="1"><b id="zFeatherOut"></b></span></label>
+      <label class="row" data-mode="spot box"><span>Corners</span><span class="inline"><input type="range" id="zFRad" min="0" max="60" step="1"><b id="zFRadOut"></b></span></label>
+      <label class="row" data-mode="blur"><span>Blur</span><span class="inline"><input type="range" id="zBlur" min="5" max="120" step="1"><b id="zBlurOut"></b></span></label>
+      <label class="row" data-mode="pixel"><span>Block size</span><span class="inline"><input type="range" id="zBlock" min="6" max="80" step="1"><b id="zBlockOut"></b></span></label>
+      <label class="row"><span>Length</span><span class="inline"><input type="range" id="zFLen" min="0.5" max="20" step="0.1"><b id="zFLenOut"></b></span></label>
+      <label class="row" data-mode="spot box"><span>Fade in and out</span><input type="checkbox" id="zFFade"></label>
+    </div>
+
+    <div class="z-pane" data-pane="callout" hidden>
+      <label class="z-field"><span>Text</span><input type="text" id="zText" maxlength="60"></label>
+      <div class="chips" id="zStyles"></div>
+      <label class="row"><span>Size</span><span class="inline"><input type="range" id="zCSize" min="0.6" max="2" step="0.05"><b id="zCSizeOut"></b></span></label>
+      <label class="row"><span>Arrow</span><input type="checkbox" id="zArrow"></label>
+      <label class="row"><span>Length</span><span class="inline"><input type="range" id="zCLen" min="0.5" max="20" step="0.1"><b id="zCLenOut"></b></span></label>
+      <label class="row"><span>Fade in and out</span><input type="checkbox" id="zCFade"></label>
+    </div>
+
+    <div class="z-pane" data-pane="cards" hidden>
+      <div class="chips" id="zWhere"></div>
+      <label class="z-field"><span>Title</span><input type="text" id="zTitle" maxlength="60"></label>
+      <label class="z-field"><span>Subtitle</span><input type="text" id="zSub" maxlength="90"></label>
+      <div class="chips" id="zCardBgs"></div>
+      <label class="row"><span>Length</span><span class="inline"><input type="range" id="zKLen" min="1" max="10" step="0.1"><b id="zKLenOut"></b></span></label>
+      <label class="row" id="zPushRow"><span>Push the edit later<small>Off: the card sits over the first seconds</small></span><input type="checkbox" id="zPush"></label>
+      <label class="row"><span>Fade into the video</span><input type="checkbox" id="zKFade"></label>
+    </div>
+
+    <div class="foot">
+      <span class="sum" id="zSum"><span class="dot"></span><span id="zSumText">Grab a frame to start</span></span>
+      <span class="btns"><button class="btn" id="zAlt"></button><button class="btn primary" id="zGo"></button></span>
+    </div>
+  </section>
+
+  <p class="copy">HaloCut Zoom · © 2026 Imtayz Nayem</p>
+
+  <div hidden><div id="status"><span id="statusText"></span></div><ul id="log"></ul></div>
+  <script>window.EW_ROLE = "status";</script>
+  <script src="CSInterface.js"></script>
+  <script src="zoom-core.js"></script>
+  <script src="main.js"></script>
+  <script src="zoom.js"></script>
+  <script src="hub.js"></script>
+</body>
+</html>

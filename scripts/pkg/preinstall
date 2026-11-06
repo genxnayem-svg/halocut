@@ -1,0 +1,5 @@
+#!/bin/sh
+# HaloCut installer: quit a running HaloCut so its app can be replaced. © 2026 Imtayz Nayem
+/usr/bin/pkill -x HaloCut 2>/dev/null
+/usr/bin/pkill -f "HaloCut.app/Contents/Resources/ew-input" 2>/dev/null
+exit 0

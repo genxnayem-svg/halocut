@@ -1,0 +1,33 @@
+/* HaloCut Command panel. © 2026 Imtayz Nayem */
+.btn.small { padding: 4px 10px; font-size: 11px; }
+.k-count { color: var(--muted); font: 10.5px ui-monospace, Menlo, monospace; flex: none; }
+.k-groups { margin: 8px 0 6px; }
+.k-list { display: flex; flex-direction: column; gap: 2px; max-height: 360px; overflow: auto; padding-right: 2px; }
+.k-item { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; }
+.k-item:hover { background: rgba(255, 255, 255, .04); }
+.k-item.on { background: linear-gradient(90deg, rgba(255, 138, 61, .2), rgba(232, 69, 124, .15) 55%, rgba(163, 91, 240, .14)); border-color: rgba(255, 138, 61, .55); }
+.k-item .t { min-width: 0; }
+.k-item b { display: block; font-weight: 600; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.k-item small { display: block; color: var(--muted); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.k-item .g { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent1); margin-right: 5px; }
+.k-item .r { display: flex; align-items: center; gap: 5px; }
+.k-item .set { opacity: 0; color: var(--muted); font-size: 11px; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; background: none; cursor: pointer; }
+.k-item:hover .set, .k-item.on .set { opacity: 1; }
+.k-item kbd { font-size: 10px; padding: 2px 6px; }
+.k-empty { color: var(--muted); padding: 14px 8px; font-size: 12px; }
+.k-keys { justify-content: flex-start; gap: 4px 10px; }
+.k-keys span { display: inline-flex; align-items: center; gap: 3px; }
+.k-capture { margin: 6px 0; padding: 10px 12px; border-radius: 10px; border: 1px dashed rgba(255, 138, 61, .8); background: rgba(255, 138, 61, .08); }
+.k-capture b { display: block; font-size: 12.5px; }
+.k-capture small { color: var(--muted); font-size: 10.5px; }
+.k-combo { margin-top: 12px; padding: 10px; border-radius: 12px; border: 1px solid rgba(255, 138, 61, .45); background: rgba(0, 0, 0, .2); }
+.k-combo-top { display: flex; gap: 6px; }
+.k-combo-top input { flex: 1; min-width: 0; background: rgba(0, 0, 0, .3); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit; outline: none; }
+.k-steps { margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 3px; }
+.k-steps li { font-size: 12px; }
+.k-steps li span { display: inline-flex; align-items: center; gap: 4px; }
+.k-steps li.gone { color: #ff8f8f; }
+.k-steps button { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 11px; padding: 0 3px; }
+.k-steps button:hover { color: var(--text); }
+.k-row { flex-wrap: wrap; justify-content: flex-end; margin-top: 8px; }
+.k-new { margin-top: 10px; }

@@ -64,5 +64,6 @@
 
   var api = { TRANSITIONS: TRANSITIONS, NEUTRAL: NEUTRAL, DIRS: DIRS, get: get, plan: plan, intensity: intensity, full: full };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloTrans = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloTrans = api; else if (typeof module !== "object") root.HaloTrans = api;
 })(typeof self !== "undefined" ? self : this);

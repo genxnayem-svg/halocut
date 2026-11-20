@@ -11,7 +11,7 @@ import Cocoa
 import ApplicationServices
 
 let selfPid = ProcessInfo.processInfo.processIdentifier
-let skipBundles: Set<String> = ["com.samistudio.halocut", "com.github.Electron"]
+let skipBundles: Set<String> = ["com.samistudio.halocut", "com.imtayznayem.halocut", "com.github.Electron"]
 var windowCache: [pid_t: [AXUIElement]] = [:]
 
 func reply(_ obj: [String: Any]) {

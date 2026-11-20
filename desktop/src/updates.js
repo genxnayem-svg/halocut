@@ -26,13 +26,16 @@ function repoOf(repository) {
   return m && !/OWNER/.test(m[1]) ? `${m[1]}/${m[2]}` : '';
 }
 
-// The latest release → { newer, version, notes, page, download } (download: the .pkg if there is one, else the .dmg)
-function readRelease(rel, current) {
+// The latest release → { newer, version, notes, page, download }
+// download: on a Mac the .pkg if there is one, else the .dmg · on Windows the .exe, else the Windows .zip
+function readRelease(rel, current, platform = process.platform) {
   if (!rel || rel.draft || !rel.tag_name) return { newer: false };
   const version = String(rel.tag_name).replace(/^v/i, '');
   const assets = rel.assets || [];
   const pick = (ext) => assets.find((a) => String(a.name).toLowerCase().endsWith(ext));
-  const asset = pick('.pkg') || pick('.dmg');
+  const asset = platform === 'win32'
+    ? pick('.exe') || assets.find((a) => /win.*\.zip$/i.test(String(a.name)))
+    : pick('.pkg') || pick('.dmg');
   return {
     newer: compare(version, current) > 0, version, notes: String(rel.body || '').slice(0, 2000),
     page: rel.html_url || '', download: asset ? asset.browser_download_url : rel.html_url || '',

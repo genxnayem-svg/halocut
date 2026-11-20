@@ -17,6 +17,8 @@
     { id: 'transitions', name: 'Transitions' },
     { id: 'looks', name: 'Looks' },
     { id: 'keys', name: 'Any shortcut' },
+    { id: 'macro', name: 'Macros' },
+    { id: 'mylook', name: 'My looks' },
   ];
 
   // Premiere Pro's own tools, picked with their default keys
@@ -203,7 +205,7 @@
 
   // Custom tools nothing uses any more (no wheel slot, Options slice or mouse button) are dropped.
   function prune(customTools, config) {
-    const used = JSON.stringify({ layouts: config.layouts, options: config.options, profiles: config.profiles });
+    const used = JSON.stringify({ layouts: config.layouts, extraLayouts: config.extraLayouts, options: config.options, profiles: config.profiles });
     const out = {};
     for (const id of Object.keys(customTools || {})) if (used.includes(JSON.stringify(id))) out[id] = customTools[id];
     return out;

@@ -84,4 +84,63 @@ window.ICONS = {
   anchorB: '<rect x="4" y="4" width="16" height="16" rx="1"/><circle cx="12" cy="20" r="2.5" fill="currentColor"/>',
   anchorBL: '<rect x="4" y="4" width="16" height="16" rx="1"/><circle cx="4" cy="20" r="2.5" fill="currentColor"/>',
   anchorL: '<rect x="4" y="4" width="16" height="16" rx="1"/><circle cx="4" cy="12" r="2.5" fill="currentColor"/>',
+  // effects, transitions and audio: one drawing each, picked by the tool's name (iconFor below)
+  blur: '<circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="6.2" stroke-dasharray="2.2 2.6"/><circle cx="12" cy="12" r="9.3" stroke-dasharray="1 3.6"/>',
+  stabilize: '<path d="M3 8c1.6-3 3.2 3 4.8 0s3.2 3 4.8 0"/><path d="M3 17h13"/><path d="M17 4v16M20.5 8.5v7"/>',
+  crop: '<path d="M7 2.5V17h14.5"/><path d="M2.5 7H17v14.5"/>',
+  key: '<circle cx="8" cy="16" r="4.2"/><path d="M11 13l9.5-9.5M16.5 7.5l3 3M13.8 10.2l2.2 2.2"/>',
+  shadow: '<rect x="3.5" y="3.5" width="12" height="12" rx="2"/><path d="M8.5 20.5h10a2 2 0 0 0 2-2v-10" stroke-dasharray="2.6 2.6"/>',
+  bw: '<rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M20 4.6V17.5a2.5 2.5 0 0 1-2.5 2.5H4.6z" fill="currentColor"/>',
+  glow: '<circle cx="12" cy="12" r="3.6"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8"/>',
+  bucket: '<path d="M4 12.5l7.5-7.5 7.5 7.5-6.2 6.2a1.8 1.8 0 0 1-2.6 0z"/><path d="M4 12.5h15M9 3l2.5 2"/><path d="M20.3 16c.9 1.3 1.3 2.1 1.3 2.8a1.3 1.3 0 0 1-2.6 0c0-.7.4-1.5 1.3-2.8z" fill="currentColor"/>',
+  drop: '<path d="M12 2.8c4.2 5 6.2 8.2 6.2 11.2a6.2 6.2 0 0 1-12.4 0c0-3 2-6.2 6.2-11.200z"/><path d="M9 14.5a3 3 0 0 0 3 3"/>',
+  curves: '<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 20.5c7 0 7.5-17 17-17"/>',
+  transform: '<rect x="6" y="6" width="12" height="12"/><path d="M4 4h4v4H4zM16 4h4v4h-4zM4 16h4v4H4zM16 16h4v4h-4z" fill="currentColor" stroke-width="1"/>',
+  sharpen: '<path d="M12 3.5l9 16.5H3z"/><path d="M12 10v5.5"/>',
+  grain: '<path d="M5 6h.01M11 4.5h.01M17.5 6.5h.01M7.5 11h.01M13 10h.01M19 12h.01M4.5 16h.01M10.5 15.5h.01M16 17h.01M7.5 20h.01M13.5 20.5h.01" stroke-width="2.4"/>',
+  vignette: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><ellipse cx="12" cy="12" rx="5.5" ry="3.8"/>',
+  mirror: '<path d="M12 2.5v19" stroke-dasharray="2.5 2.5"/><path d="M9 7l-6 10h6zM15 7l6 10h-6z"/>',
+  lens: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M15.5 8.5l1.5-1.5"/>',
+  dipBlack: '<rect x="2.5" y="6" width="7" height="12" rx="1.5"/><rect x="14.5" y="6" width="7" height="12" rx="1.5"/><rect x="10.2" y="8.5" width="3.6" height="7" rx=".8" fill="currentColor" stroke-width="1"/>',
+  dipWhite: '<rect x="2.5" y="6" width="7" height="12" rx="1.5"/><rect x="14.5" y="6" width="7" height="12" rx="1.5"/><path d="M12 9v6M10.5 12h3"/>',
+  dissolve: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6" stroke-dasharray="2.6 2.4"/>',
+  filmDissolve: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7.5 5v14M16.5 5v14M3 9.700h4.5M3 14.300h4.5M16.5 9.700H21M16.5 14.300H21"/>',
+  additive: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/><path d="M12 10v4M10 12h4"/>',
+  wipe: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M11 5v14"/><path d="M14 12h4M16.3 10l2 2-2 2"/>',
+  push: '<rect x="2.5" y="5" width="8" height="14" rx="1.5"/><path d="M13.5 12h8M18 8.5l3.5 3.5-3.5 3.5"/>',
+  iris: '<circle cx="12" cy="12" r="9"/><path d="M12 3l3.2 5.600M20.8 10l-6.4.2M19 17.5l-3.3-5.5M12 21l-3.2-5.600M3.2 14l6.4-.2M5 6.5l3.3 5.5"/>',
+  crossfade: '<path d="M3 17.5h3.5L17.5 6.5H21"/><path d="M3 6.5h3.5l11 11H21"/>',
+  eq: '<path d="M5 20V11M10 20V4M15 20v-7M20 20V8"/>',
+  wave: '<path d="M3 12h2M7 8v8M11 4v16M15 7v10M19 10v4"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>',
+  bolt: '<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/>',
 };
+
+// Tools that only carry a general icon (every effect is "fx", every transition a pair of boxes) get their own
+// drawing from their name, so a wheel full of effects doesn't read as the same icon twelve times.
+(function () {
+  const GENERAL = { fx: 1, transition: 1, sliders: 1, dot: 1, keyboard: 1 };
+  const BY_NAME = [
+    [/dip to black/i, 'dipBlack'], [/dip to white/i, 'dipWhite'], [/film dissolve/i, 'filmDissolve'], [/additive/i, 'additive'],
+    [/dissolve|morph cut/i, 'dissolve'], [/wipe|barn|clock wipe|gradient wipe|inset|split/i, 'wipe'], [/push|slide|whip/i, 'push'],
+    [/iris/i, 'iris'], [/cross zoom|zoom/i, 'zoomIn'], [/constant (power|gain)|exponential fade|crossfade/i, 'crossfade'],
+    [/page (peel|turn)|flip over|cube spin/i, 'cube'],
+    [/black\s*(&|and)\s*white|monochrome|desaturate/i, 'bw'], [/blur|defocus|soften/i, 'blur'], [/stabili[sz]/i, 'stabilize'],
+    [/crop/i, 'crop'], [/key|matte|chroma/i, 'key'], [/shadow/i, 'shadow'], [/glow|bloom|flare|light rays|lightning/i, 'glow'],
+    [/^fill$|paint bucket|ramp|gradient/i, 'bucket'], [/tint|colou?r balance|hue|saturation|vibrance/i, 'drop'],
+    [/curves|levels|gamma|brightness|contrast|exposure/i, 'curves'], [/lumetri|colou?r|lut/i, 'palette'],
+    [/transform|motion|position|scale|corner pin|offset/i, 'transform'], [/sharpen|unsharp/i, 'sharpen'],
+    [/noise|grain|dust|vhs|pixel|mosaic|posteri[sz]e/i, 'grain'], [/vignette/i, 'vignette'], [/mirror|replicate|kaleido/i, 'mirror'],
+    [/flip|horizontal|vertical/i, 'flipH'], [/lens|distort|warp|bulge|spherize|twirl|turbulent|wave warp|ripple/i, 'lens'],
+    [/echo|reverb|delay|chorus|flanger|phaser/i, 'wave'], [/eq|equali[sz]|bass|treble|filter|pass\b/i, 'eq'],
+    [/denoise|dereverb|dehum|deess|compress|limiter|dynamics|loudness|gain|volume|amplif/i, 'gain'],
+    [/time|speed|posterize time/i, 'clock'], [/text|title|type/i, 'text'], [/opacity|alpha|transparen/i, 'opacity'],
+    [/find|search/i, 'search'], [/rotate|spin|roll/i, 'rotate'],
+  ];
+  window.iconFor = function (icon, label) {
+    if (icon && !GENERAL[icon]) return icon;
+    const name = String(label || '');
+    const hit = name && (icon !== 'keyboard' && icon !== 'dot' || /find|search/i.test(name)) && BY_NAME.find(([re]) => re.test(name));
+    return hit ? hit[1] : icon || 'dot';
+  };
+})();

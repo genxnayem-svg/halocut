@@ -1,5 +1,5 @@
 // Orbit switch: open apps, their windows and browser tabs, as a Tool-wheel-shaped layout.
-// macOS only for now (ew-apps helper + AppleScript for browser tabs).
+// The ew-apps helper lists and raises apps on macOS and Windows; browser tabs (AppleScript) are macOS only.
 const { spawn, execFile } = require('child_process');
 const readline = require('readline');
 const fs = require('fs');
@@ -95,7 +95,7 @@ class AppsHelper {
 
   start() {
     if (!fs.existsSync(this.helperPath)) throw new Error(`Apps helper missing: ${this.helperPath}`);
-    this.proc = spawn(this.helperPath, [], { stdio: ['pipe', 'pipe', 'inherit'] });
+    this.proc = spawn(this.helperPath, [], { stdio: ['pipe', 'pipe', 'inherit'], windowsHide: true });
     readline.createInterface({ input: this.proc.stdout }).on('line', (line) => {
       let m;
       try { m = JSON.parse(line); } catch { return; }

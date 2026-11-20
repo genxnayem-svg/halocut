@@ -130,5 +130,6 @@
   var api = { COLORS: COLORS, clock: clock, timecode: timecode, youtubeChapters: youtubeChapters, toCsv: toCsv, toTxt: toTxt,
     toSrt: toSrt, toJson: toJson, parseTime: parseTime, parseImport: parseImport, duplicates: duplicates, numbered: numbered, snapTargets: snapTargets };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloMarkers = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloMarkers = api; else if (typeof module !== "object") root.HaloMarkers = api;
 })(typeof self !== "undefined" ? self : this);

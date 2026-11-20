@@ -3,7 +3,8 @@
 //   release { kind, name, blocked }
 //   move    {}
 //   recorded { kind, name, mods } / recordCancelled
-// macOS uses the native ew-input helper (can block buttons and keys); elsewhere uiohook (watch only, for now).
+// macOS and Windows use the native ew-input helper (can block buttons and keys); elsewhere, or when the helper
+// is missing, uiohook (watch only).
 const { EventEmitter } = require('events');
 const { execFile, spawn } = require('child_process');
 const path = require('path');
@@ -12,6 +13,7 @@ const readline = require('readline');
 const { uIOhook, UiohookKey } = require('uiohook-napi');
 
 const IS_MAC = process.platform === 'darwin';
+const IS_WIN = process.platform === 'win32';
 
 // ---- names ------------------------------------------------------------------
 
@@ -28,6 +30,18 @@ const MAC_KEYS = {
   123: 'ArrowLeft', 124: 'ArrowRight', 125: 'ArrowDown', 126: 'ArrowUp',
 };
 const MAC_CODES = Object.fromEntries(Object.entries(MAC_KEYS).map(([c, n]) => [n, Number(c)]));
+
+// Windows virtual-key codes, under the same names
+const WIN_KEYS = {
+  8: 'Backspace', 9: 'Tab', 13: 'Enter', 27: 'Escape', 32: 'Space', 33: 'PageUp', 34: 'PageDown', 35: 'End', 36: 'Home',
+  37: 'ArrowLeft', 38: 'ArrowUp', 39: 'ArrowRight', 40: 'ArrowDown', 46: 'Delete',
+  186: 'Semicolon', 187: 'Equal', 188: 'Comma', 189: 'Minus', 190: 'Period', 191: 'Slash', 192: 'Backquote',
+  219: 'BracketLeft', 220: 'Backslash', 221: 'BracketRight', 222: 'Quote',
+};
+for (let i = 0; i < 10; i++) WIN_KEYS[48 + i] = String(i);
+for (let i = 0; i < 26; i++) WIN_KEYS[65 + i] = String.fromCharCode(65 + i);
+for (let i = 1; i <= 24; i++) WIN_KEYS[111 + i] = `F${i}`;
+const WIN_CODES = Object.fromEntries(Object.entries(WIN_KEYS).map(([c, n]) => [n, Number(c)]));
 
 // Mouse buttons by number (0 = left). Names are what the config stores.
 function mouseName(n) {
@@ -98,11 +112,9 @@ class FrontApp extends EventEmitter {
           const f = err ? { name: '', bundleId: '' } : parseFront(out);
           this.set(f.name, f.bundleId);
         });
-      } else {
-        // TODO(windows): native foreground-window lookup in the Windows build.
-        this.set('');
       }
     };
+    if (!IS_MAC) return; // Windows: the input helper says which app is in front (see main.js)
     poll();
     this.timer = setInterval(poll, 400);
   }
@@ -111,19 +123,21 @@ class FrontApp extends EventEmitter {
   }
   // the apps added in Settings ([{ id, bundleId }]): each gets its own wheels while it is in front
   setApps(list) { this.added = list || []; this.emit('change', this.name); }
-  // "PPRO", "AEFT", an added app's id ("app.<bundle id>") or "other"
+  // "PPRO", "AEFT", an added app's id ("app.<bundle id>") or "other". On Windows the id is the .exe's name
+  // ("adobe premiere pro.exe", "afterfx.exe").
   appId() {
-    if (/premiere/i.test(this.name)) return 'PPRO';
-    if (/after effects/i.test(this.name)) return 'AEFT';
+    if (/premiere/i.test(this.name) || /premiere pro/i.test(this.bundleId)) return 'PPRO';
+    if (/after effects/i.test(this.name) || /^afterfx/i.test(this.bundleId)) return 'AEFT';
     const a = this.bundleId && this.added.find((x) => x.bundleId === this.bundleId);
     return a ? a.id : 'other';
   }
 }
 
-// ---- macOS: native helper -------------------------------------------------------
+// ---- macOS and Windows: native helper --------------------------------------------
 
-class MacInput extends EventEmitter {
-  constructor(helperPath) { super(); this.helperPath = helperPath; this.rules = []; }
+class HelperInput extends EventEmitter {
+  // keys: the platform's key codes by number · codes: the same, by name
+  constructor(helperPath, keys = MAC_KEYS, codes = MAC_CODES) { super(); this.helperPath = helperPath; this.rules = []; this.keys = keys; this.codes = codes; }
 
   start() {
     if (!fs.existsSync(this.helperPath)) throw new Error(`Input helper missing: ${this.helperPath}`);
@@ -131,7 +145,7 @@ class MacInput extends EventEmitter {
   }
 
   spawnHelper() {
-    const p = spawn(this.helperPath, [], { stdio: ['pipe', 'pipe', 'inherit'] });
+    const p = spawn(this.helperPath, [], { stdio: ['pipe', 'pipe', 'inherit'], windowsHide: true });
     this.proc = p;
     readline.createInterface({ input: p.stdout }).on('line', (line) => {
       let m;
@@ -149,15 +163,17 @@ class MacInput extends EventEmitter {
   }
 
   onHelper(m) {
-    const name = (kind, code) => (kind === 'mouse' ? mouseName(code) : MAC_KEYS[code] || `key${code}`);
+    const name = (kind, code) => (kind === 'mouse' ? mouseName(code) : this.keys[code] || `key${code}`);
     switch (m.e) {
-      case 'ready': this.emit('ready'); break;
+      case 'ready': this.emit('ready', { listenOnly: !!m.listenOnly }); break;
       case 'error': this.emit('error', new Error(m.msg)); break;
       case 'move': this.emit('move'); break;
+      case 'scroll': this.emit('scroll', { dy: m.dy }); break;
       case 'down': this.emit('press', { kind: m.kind, name: name(m.kind, m.code), mods: normMods(m.mods), blocked: m.blocked, repeat: !!m.repeat }); break;
       case 'up': this.emit('release', { kind: m.kind, name: name(m.kind, m.code), blocked: m.blocked }); break;
       case 'recorded': this.emit('recorded', { kind: m.kind, name: name(m.kind, m.code), mods: normMods(m.mods) }); break;
       case 'recordCancelled': this.emit('recordCancelled'); break;
+      case 'front': this.emit('front', { name: m.name || '', id: m.id || '', path: m.path || '' }); break; // Windows
       default: break;
     }
   }
@@ -168,20 +184,23 @@ class MacInput extends EventEmitter {
   setBlocking(list) {
     this.rules = list.map((t) => ({
       kind: t.kind,
-      code: t.kind === 'mouse' ? mouseNumber(t.name) : MAC_CODES[t.name],
+      // a key HaloCut has no name for is kept as "key<code>" (the § key is key10): it is taken over like any other
+      code: t.kind === 'mouse' ? mouseNumber(t.name) : (this.codes[t.name] !== undefined ? this.codes[t.name] : (/^key(\d+)$/.test(t.name) ? Number(t.name.slice(3)) : undefined)),
       mods: normMods(t.mods),
       delayMs: t.delayMs || 0,
     })).filter((r) => r.code !== undefined && r.code >= 0);
     this.send({ cmd: 'rules', rules: this.rules });
   }
 
+  // on: report the scroll wheel (and keep it from the app) while a wheel with several layouts is open
+  setScroll(on) { this.send({ cmd: 'scroll', on: !!on }); }
   record() { this.send({ cmd: 'record' }); }
   cancelRecord() { this.send({ cmd: 'cancelRecord' }); }
   canBlock() { return true; }
   stop() { this.stopped = true; if (this.proc) this.proc.kill(); }
 }
 
-// ---- other platforms: uiohook (watch only) -------------------------------------
+// ---- without the helper: uiohook (watch only) ----------------------------------
 
 const HOOK_BUTTONS = { 1: 'left', 2: 'right', 3: 'middle', 4: 'mouse4', 5: 'mouse5' };
 const HOOK_KEYS = Object.fromEntries(Object.entries(UiohookKey).map(([n, c]) => [c, n]));
@@ -216,16 +235,20 @@ class HookInput extends EventEmitter {
     this.emit('ready');
   }
 
-  setBlocking() { /* TODO(windows): low-level hook helper that can swallow events */ }
+  setBlocking() { /* uiohook can watch, not swallow */ }
+  setScroll() { /* nor the scroll wheel */ }
   record() { this.recording = true; }
   cancelRecord() { this.recording = false; }
   canBlock() { return false; }
   stop() { uIOhook.stop(); }
 }
 
+// helperPath: the built ew-input for this platform, or nothing when there is none (then: watch only)
 function createInput(helperPath) {
-  return IS_MAC ? new MacInput(helperPath) : new HookInput();
+  if (IS_MAC) return new HelperInput(helperPath);
+  if (IS_WIN && helperPath) return new HelperInput(helperPath, WIN_KEYS, WIN_CODES);
+  return new HookInput();
 }
 
 module.exports = {
-  parseFront, createInput, FrontApp, sendKeys, describe, normMods, IS_MAC };
+  parseFront, createInput, FrontApp, sendKeys, describe, normMods, IS_MAC, IS_WIN, HelperInput, WIN_KEYS, WIN_CODES };

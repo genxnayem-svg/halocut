@@ -6,13 +6,15 @@
   --muted: #9a93a6;
   --accent1: #ff8a3d;
   --accent2: #e8457c;
+  --accent1-rgb: 255, 138, 61; /* the same two, for see-through tints (the HaloCut app's theme changes all four) */
+  --accent2-rgb: 232, 69, 124;
   --ok: #4fd18b;
   --bad: #ff6b6b;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
-  background: radial-gradient(120% 80% at 0% 0%, #2c1f2a 0%, var(--bg) 60%);
+  background: radial-gradient(120% 80% at 0% 0%, var(--bg-glow, #2c1f2a) 0%, var(--bg) 60%);
   color: var(--text);
   font: 12px/1.45 -apple-system, "Segoe UI", Inter, sans-serif;
   padding: 12px;

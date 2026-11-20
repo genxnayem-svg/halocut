@@ -131,5 +131,6 @@
   var api = { KINDS: KINDS, UNUSED_BIN: UNUSED_BIN, DUPES_BIN: DUPES_BIN, kindOf: kindOf, organise: organise, unused: unused,
     offline: offline, duplicates: duplicates, rename: rename, labels: labels, findFiles: findFiles, report: report, bytes: bytes };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloBins = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloBins = api; else if (typeof module !== "object") root.HaloBins = api;
 })(typeof self !== "undefined" ? self : this);

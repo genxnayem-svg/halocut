@@ -2,26 +2,47 @@
 
 © 2026 Imtayz Nayem. All rights reserved.
 
-A Tool wheel and per-app mouse buttons for Premiere Pro and After Effects.
+HaloCut puts your editing tools on a wheel under the mouse. Hold a key or mouse button, move toward a tool, let go.
+It works in Premiere Pro and After Effects, and in any other app you add (DaVinci Resolve, Final Cut Pro, Photoshop, Lightroom Classic, …).
 
+| Part | Folder | What it is |
+| --- | --- | --- |
+| Desktop app | `desktop/` | Electron tray app: the wheels, mouse buttons, Quick search, settings |
+| Panel | `extension/` | CEP panel for Premiere Pro and After Effects: runs the tools on the timeline |
+| Build scripts | `scripts/` | Signing, PKG and DMG |
+
+## Docs
+
+- [Features](docs/FEATURES.md): the wheels, Quick search, panel tools, themes, backups
+- [Install and first run](docs/INSTALL.md): installing and the two macOS permissions
+- [Build and release](docs/BUILD.md): building the PKG and DMG, signing, GitHub releases
+- [Testing](docs/TESTING.md): the automatic tests and the manual checklist
+- [Troubleshooting](docs/TROUBLESHOOTING.md): when the wheel doesn't open or a tool does nothing
+
+## Quick start (development, macOS)
+
+```bash
+cd desktop && npm install && npm start
 ```
-desktop/     Electron tray app: Tool wheel overlay, mouse buttons, settings, WebSocket bridge server
-extension/   CEP panel for Premiere Pro + After Effects: runs the commands (jsx/premiere.jsx, jsx/aftereffects.jsx)
-```
 
-## Run it (macOS)
-1. `cd desktop && npm install && npm start`
-2. Setup tab → **Open settings**, then turn HaloCut on under **Accessibility** and **Input Monitoring**.
-   In development the entry is called "Electron". Restart the app afterwards.
-3. Setup tab → **Install**. This links `extension/` into `~/Library/Application Support/Adobe/CEP/extensions`.
-4. Restart Premiere Pro / After Effects → **Window › Extensions › HaloCut**. Dock the panel and leave it open.
-5. Hold **F10** over the timeline, move toward a tool and let go. Release in the centre to cancel; a quick tap keeps the wheel open.
+Then open **Settings › Setup**, install the panel, and turn HaloCut on under **Accessibility** and **Input Monitoring**.
+In development the entry in those lists is called "Electron".
 
-## Tests
-`cd desktop && npm test` runs the wheel hit-testing, the bridge round trip and the Premiere scripts against a fake DOM.
+## Default triggers
 
-## Known limits in Phase 1
-- Mouse buttons still reach the app too (no blocking yet). A native helper in a later phase fixes this.
-- Labels colour the source clip: this is a limit of Premiere's scripting API.
-- Front-app detection and keystrokes are written for macOS; the Windows paths are marked TODO.
+| What | Trigger |
+| --- | --- |
+| Tool wheel | hold **F10** |
+| Orbit switch (switch apps) | **F9** |
+| Quick search (Premiere Pro / After Effects) | **⌥ Space** |
+
+All of them can be changed in Settings. Any key or mouse button can be a trigger.
+
+## Known limits
+
+- Windows: a first build exists (`cd desktop && npm run package:win` → `dist/HaloCut-<version>-win-x64.zip`), but it has
+  not been run on a PC yet. Wheels, buttons, the Orbit switch and the Adobe bridge are in; browser tabs on the Orbit
+  switch, copy/paste frame in the panel and captions (speech) are still Mac only. See `docs/WINDOWS.md`.
+- Labels colour the source clip: a limit of Premiere's scripting API.
 - After Effects menu tools (Split layer, Freeze frame…) look up English menu names.
+- Side mouse buttons may be taken by the mouse maker's own software (Logi Options+ and similar) before HaloCut sees them.

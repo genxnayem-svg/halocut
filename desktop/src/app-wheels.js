@@ -1,6 +1,6 @@
 // Any app can have its own Tool wheel, Options wheel and buttons (DaVinci Resolve, Lightroom…): add it in Settings and it
 // gets a tab of its own. Apps HaloCut knows start with a wheel of their default shortcuts; any other starts with the basics.
-// An added app is told apart by its bundle id while it is in front.
+// An added app is told apart by its bundle id while it is in front (on Windows: the name of its .exe, in lower case).
 // © 2026 Imtayz Nayem
 const TC = require('./tool-catalog');
 
@@ -13,7 +13,7 @@ const isAdded = (id) => typeof id === 'string' && id.startsWith(PREFIX);
 const PACKS = [
   {
     name: 'DaVinci Resolve',
-    bundleIds: ['com.blackmagic-design.DaVinciResolve', 'com.blackmagic-design.DaVinciResolveLite', 'com.blackmagic-design.DaVinciResolveStudio'],
+    bundleIds: ['com.blackmagic-design.DaVinciResolve', 'com.blackmagic-design.DaVinciResolveLite', 'com.blackmagic-design.DaVinciResolveStudio', 'resolve.exe'],
     commands: [
       ['Razor at playhead', 'mod+b', 'scissorsAll'], ['Blade mode', 'b', 'scissors'], ['Selection mode', 'a', 'select'], ['Trim mode', 't', 'trim'],
       ['Ripple delete', 'shift+backspace', 'ripple'], ['Delete, leave gap', 'backspace', 'trash'], ['Enable / disable clip', 'd', 'eyeOff'],
@@ -39,7 +39,7 @@ const PACKS = [
   },
   {
     name: 'Lightroom Classic',
-    bundleIds: ['com.adobe.LightroomClassicCC7'],
+    bundleIds: ['com.adobe.LightroomClassicCC7', 'lightroom.exe'],
     commands: [
       ['Develop', 'd', 'sliders'], ['Crop', 'r', 'fill'], ['Spot removal', 'q', 'dot'], ['Masking', 'shift+w', 'adjust'],
       ['Before / after', '\\', 'flipH'], ['Auto settings', 'mod+u', 'palette'], ['Black & white', 'v', 'opacity'], ['Reset settings', 'shift+mod+r', 'reset'],
@@ -60,6 +60,61 @@ const PACKS = [
       ['Stars', 'tag', ['3 stars', 'No stars', '1 star', '2 stars', '4 stars', '5 stars']],
       ['View', 'fill', ['Library grid', 'Loupe view', 'Compare', 'Survey', 'Zoom', 'Full screen preview', 'Hide panels']],
       ['File', 'save', ['Export', 'Export with previous', 'Import', 'Rotate left', 'Rotate right', 'Undo', 'Redo']],
+    ],
+  },
+  {
+    name: 'Final Cut Pro',
+    bundleIds: ['com.apple.FinalCut', 'com.apple.FinalCutTrial'],
+    commands: [
+      ['Blade at playhead', 'mod+b', 'scissorsAll'], ['Blade tool', 'b', 'scissors'], ['Select tool', 'a', 'select'], ['Trim tool', 't', 'trim'],
+      ['Position tool', 'p', 'center'], ['Range tool', 'r', 'fit'], ['Ripple delete', 'backspace', 'ripple'], ['Replace with gap', 'shift+backspace', 'trash'],
+      ['Enable / disable clip', 'v', 'eyeOff'], ['Snapping', 'n', 'link'], ['Solo', 'alt+s', 'gain'], ['Detach audio', 'ctrl+shift+s', 'unlink'],
+      ['Connect to storyline', 'q', 'link'], ['Insert', 'w', 'plus'], ['Append', 'e', 'forward'], ['Overwrite', 'd', 'layers'],
+      ['Compound clip', 'alt+g', 'layersEach'], ['Break apart', 'shift+mod+g', 'layers'], ['Lift from storyline', 'alt+mod+up', 'flipV'],
+      ['Add marker', 'm', 'flag'], ['Mark in', 'i', 'flag'], ['Mark out', 'o', 'flag'], ['Mark clip', 'x', 'flag'], ['Favourite', 'f', 'tag'],
+      ['Retime editor', 'mod+r', 'clock'], ['Freeze frame', 'alt+f', 'freeze'], ['Hold frame', 'shift+h', 'pause'],
+      ['Add transition', 'mod+t', 'transition'], ['Add title', 'ctrl+t', 'text'], ['Paste attributes', 'shift+mod+v', 'copy'],
+      ['Zoom in', 'mod+=', 'zoomIn'], ['Zoom out', 'mod+-', 'zoomOut'], ['Zoom to fit', 'shift+z', 'fit'],
+      ['Inspector', 'mod+4', 'sliders'], ['Colour board', 'mod+6', 'palette'], ['Video scopes', 'mod+7', 'curves'], ['Balance colour', 'alt+mod+b', 'drop'],
+      ['Render selection', 'ctrl+r', 'bolt'], ['Export', 'mod+e', 'save'],
+      ['Play / stop', 'space', 'play'], ['Undo', 'mod+z', 'undo'], ['Redo', 'shift+mod+z', 'redo'],
+    ],
+    wheel: [
+      ['Edit', 'scissors', ['Blade at playhead', 'Blade tool', 'Select tool', 'Trim tool', 'Position tool', 'Range tool', 'Ripple delete', 'Replace with gap', 'Enable / disable clip', 'Snapping']],
+      ['Storyline', 'layers', ['Insert', 'Connect to storyline', 'Append', 'Overwrite', 'Compound clip', 'Break apart', 'Lift from storyline', 'Detach audio']],
+      ['Marks', 'flag', ['Add marker', 'Mark in', 'Mark out', 'Mark clip', 'Favourite']],
+      ['Timing', 'clock', ['Retime editor', 'Freeze frame', 'Hold frame', 'Add transition', 'Add title', 'Paste attributes']],
+      ['Colour', 'palette', ['Colour board', 'Balance colour', 'Video scopes', 'Inspector']],
+      ['View', 'zoomIn', ['Zoom to fit', 'Zoom in', 'Zoom out', 'Solo']],
+      ['Finish', 'save', ['Export', 'Render selection', 'Play / stop', 'Undo', 'Redo']],
+    ],
+  },
+  {
+    name: 'Photoshop',
+    bundleIds: ['com.adobe.Photoshop', 'com.adobe.Photoshop.beta', 'photoshop.exe'],
+    commands: [
+      ['Move', 'v', 'select'], ['Marquee', 'm', 'null'], ['Lasso', 'l', 'loop'], ['Quick selection', 'w', 'bolt'], ['Crop', 'c', 'crop'],
+      ['Eyedropper', 'i', 'drop'], ['Healing brush', 'j', 'plus'], ['Brush', 'b', 'ease'], ['Clone stamp', 's', 'copy'], ['Eraser', 'e', 'trash'],
+      ['Gradient', 'g', 'bucket'], ['Pen', 'p', 'shape'], ['Type', 't', 'text'], ['Hand', 'h', 'center'], ['Zoom tool', 'z', 'search'],
+      ['New layer', 'shift+mod+n', 'plus'], ['Layer via copy', 'mod+j', 'copy'], ['Group layers', 'mod+g', 'layersEach'], ['Merge down', 'mod+e', 'layers'],
+      ['Merge visible', 'shift+mod+e', 'layers'], ['Stamp visible', 'alt+shift+mod+e', 'layersEach'], ['Clipping mask', 'alt+mod+g', 'parent'],
+      ['Free transform', 'mod+t', 'transform'], ['Deselect', 'mod+d', 'null'], ['Invert selection', 'shift+mod+i', 'flipH'], ['Select all', 'mod+a', 'fit'],
+      ['Levels', 'mod+l', 'eq'], ['Curves', 'mod+m', 'curves'], ['Hue / saturation', 'mod+u', 'palette'], ['Colour balance', 'mod+b', 'drop'],
+      ['Invert', 'mod+i', 'opacity'], ['Desaturate', 'shift+mod+u', 'bw'], ['Camera Raw filter', 'shift+mod+a', 'sliders'], ['Liquify', 'shift+mod+x', 'lens'],
+      ['Fill', 'shift+f5', 'bucket'], ['Fill with foreground', 'alt+backspace', 'opacityFull'], ['Default colours', 'd', 'bw'], ['Swap colours', 'x', 'pingpong'],
+      ['Smaller brush', '[', 'zoomOut'], ['Larger brush', ']', 'zoomIn'],
+      ['Fit on screen', 'mod+0', 'fit'], ['100%', 'mod+1', 'hundred'], ['Zoom in', 'mod+=', 'zoomIn'], ['Zoom out', 'mod+-', 'zoomOut'],
+      ['Image size', 'alt+mod+i', 'fill'], ['Canvas size', 'alt+mod+c', 'fillW'], ['Export as', 'alt+shift+mod+w', 'save'], ['Save', 'mod+s', 'save'],
+      ['Undo', 'mod+z', 'undo'], ['Redo', 'shift+mod+z', 'redo'],
+    ],
+    wheel: [
+      ['Tools', 'select', ['Move', 'Brush', 'Eraser', 'Clone stamp', 'Healing brush', 'Crop', 'Type', 'Pen', 'Gradient', 'Eyedropper']],
+      ['Select', 'null', ['Deselect', 'Marquee', 'Lasso', 'Quick selection', 'Invert selection', 'Select all']],
+      ['Layers', 'layers', ['New layer', 'Layer via copy', 'Group layers', 'Merge down', 'Merge visible', 'Stamp visible', 'Clipping mask', 'Free transform']],
+      ['Adjust', 'curves', ['Curves', 'Levels', 'Hue / saturation', 'Colour balance', 'Invert', 'Desaturate', 'Camera Raw filter', 'Liquify']],
+      ['Paint', 'bucket', ['Fill', 'Fill with foreground', 'Default colours', 'Swap colours', 'Smaller brush', 'Larger brush']],
+      ['View', 'zoomIn', ['Fit on screen', '100%', 'Zoom in', 'Zoom out', 'Hand', 'Zoom tool']],
+      ['File', 'save', ['Save', 'Export as', 'Image size', 'Canvas size', 'Undo', 'Redo']],
     ],
   },
 ];
@@ -101,7 +156,7 @@ function starter(app) {
 const commandsFor = (bundleId) => (packFor(bundleId) || BASICS).commands;
 
 // Premiere Pro and After Effects have their own tabs already
-const ADOBE_EDITORS = /premiere|after effects/i;
+const ADOBE_EDITORS = /premiere|after effects|^afterfx/i;
 
 // data: the settings · app: { bundleId, name, path } → { ok, msg, id, patch } (patch: what to save; nothing changes otherwise)
 function add(data, app) {
@@ -138,7 +193,7 @@ function remove(data, id) {
     ok: true, msg: `${app.name} removed`,
     patch: {
       apps: data.apps.filter((a) => a.id !== id),
-      layouts: drop(data.layouts), customTools,
+      layouts: drop(data.layouts), extraLayouts: drop(data.extraLayouts), activeLayout: drop(data.activeLayout), customTools,
       options: { ...data.options, wheels: drop(data.options && data.options.wheels) },
       profiles: drop(data.profiles),
     },

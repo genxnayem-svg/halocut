@@ -38,5 +38,6 @@
 
   var api = { rank: rank };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloEffectSearch = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloEffectSearch = api; else if (typeof module !== "object") root.HaloEffectSearch = api;
 })(typeof self !== "undefined" ? self : this);

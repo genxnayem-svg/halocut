@@ -10,16 +10,23 @@ const {
 
 const { Bridge } = require('./bridge');
 const { Config, toBackup, fromBackup, WHEEL_SCALE, NOTE_MS } = require('./config');
-const { createInput, FrontApp, sendKeys, normMods, IS_MAC } = require('./input');
+const { createInput, FrontApp, sendKeys, normMods, IS_MAC, IS_WIN } = require('./input');
+const WinHelper = require('./win-helper');
 const { tools } = require('./tools');
 const { AppsHelper } = require('./apps');
 const G = require('./wheel-geometry');
 const OG = require('./options-geometry');
 const commandKeys = require('./command-keys');
 const TC = require('./tool-catalog');
+const Macros = require('./macros');
+const WheelShare = require('./wheel-share');
+const Usage = require('./usage');
 const QS = require('./quick-search');
 const AppWheels = require('./app-wheels');
 const Updates = require('./updates');
+const LS = require('./layout-sets');
+const Look = require('./appearance');
+const Backups = require('./backups');
 
 const PRODUCT = 'HaloCut';
 const COPYRIGHT = '© 2026 Imtayz Nayem';
@@ -34,10 +41,13 @@ let config, bridge, input, front, tray, wheelWin, settingsWin, searchWin, apps;
 let commandShortcuts = [], commandBusy = false; // HaloCut Command's shortcuts, saved by its panel
 let inputError = null;
 let inputReady = false;
+let inputLimited = false; // listening without Accessibility: wheels open, but triggers also reach the app
+let askedForAccess = false; // HaloCut asks macOS for Accessibility itself, once per launch
 const seenButtons = new Set(); // mouse buttons pressed since start (Devices page)
 let wheel = null; // state of the open wheel
 
 if (!app.requestSingleInstanceLock()) app.quit();
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required'); // the wheel's tick sound plays without a click first
 
 // ---------------------------------------------------------------- windows
 
@@ -95,6 +105,9 @@ function statusSnapshot() {
     frontAppName: (() => { const a = (config.data.apps || []).find((x) => x.id === front.appId()); return a ? a.name : ''; })(),
     accessibility: IS_MAC ? systemPreferences.isTrustedAccessibilityClient(false) && inputReady : true,
     inputError,
+    inputLimited,
+    // Windows: why the trigger can't be taken over (the helper could not be built on this PC)
+    limitedWhy: IS_WIN && inputLimited ? `Listening, limited: ${helperError || 'the input helper is missing'}, so your trigger also reaches the app underneath.` : '',
     canBlock: input ? input.canBlock() : false,
     seenButtons: [...seenButtons],
     version: app.getVersion(),
@@ -138,15 +151,24 @@ function togglePause() {
 const toolDef = (id) => tools[id] || (config.data.customTools || {})[id];
 const allTools = () => ({ ...tools, ...(config.data.customTools || {}) });
 
-function resolvedLayout(appId) {
-  const layout = config.data.layouts[appId];
+// The layout the wheel shows: the saved one, plus a "Most used" segment when that is switched on (src/usage.js)
+function liveLayout(appId, idx = 0) {
+  const all = LS.list(config.data, appId), layout = all[idx] || all[0];
+  if (!layout || !config.data.wheel.mostUsed) return layout;
+  return Usage.withFavourites(layout, Usage.top(config.data.usage, appId, (id) => !!toolDef(id)), TC.MAX_SEGMENTS + 1);
+}
+
+// idx: which of the app's layouts (0 = the first); the wheel also gets how many there are, to say "scroll: 2 of 3"
+// live: the layout as the wheel shows it (with "Most used"); the settings page edits the saved one
+function resolvedLayout(appId, idx = 0, live = null) {
+  const all = LS.list(config.data, appId), saved = all[idx] || all[0], layout = live || saved;
   if (!layout) return null;
   const info = (id) => {
     const t = toolDef(id) || { label: id, icon: 'dot' };
     return { id, label: t.label, icon: t.icon, tint: t.tint, hint: t.hint };
   };
   return {
-    name: layout.name,
+    name: layout.name, index: all.indexOf(saved), count: all.length,
     segments: layout.segments.map((s) => ({
       name: s.name, icon: s.icon, color: s.color, main: info(s.main), tools: s.tools.map(info),
     })),
@@ -162,8 +184,9 @@ function optionsFor(appId) {
 function openWheel(source, mode = 'tool', ready = null) {
   if (config.data.paused || wheel) return;
   const appId = front.appId();
-  const layout = mode === 'orbit' ? ready : mode === 'tool' ? config.data.layouts[appId] : optionsFor(appId);
-  if (!layout) return; // the Tool wheel lives in Premiere Pro and After Effects only
+  const layoutIdx = mode === 'tool' ? LS.active(config.data, appId) : 0; // the layout used last
+  const layout = mode === 'orbit' ? ready : mode === 'tool' ? liveLayout(appId, layoutIdx) : optionsFor(appId);
+  if (!layout) return; // the Tool wheel lives in Premiere Pro, After Effects and the apps you added
 
   // the window grows or shrinks with the wheel size picked on the General page
   const scale = wheelScale(), size = Math.round(WHEEL_SIZE * scale);
@@ -172,18 +195,38 @@ function openWheel(source, mode = 'tool', ready = null) {
   const x = Math.round(Math.min(Math.max(p.x - size / 2, area.x), area.x + area.width - size));
   const y = Math.round(Math.min(Math.max(p.y - size / 2, area.y), area.y + area.height - size));
 
-  wheel = { mode, appId, layout, source, cx: p.x, cy: p.y, winX: x, winY: y, openSeg: -1, ringStep: 0, scale,
+  wheel = { mode, appId, layout, layoutIdx, source, cx: p.x, cy: p.y, winX: x, winY: y, openSeg: -1, ringStep: 0, scale,
     hit: { seg: -1, tool: -1, ring: -1, slot: -1 }, openedAt: Date.now(), sticky: false };
   wheelWin.setBounds({ x, y, width: size, height: size });
   wheelWin.webContents.send('wheel:open', {
-    mode, app: appId, center: { x: p.x - x, y: p.y - y }, scale, size, animation: general().animation || 'smooth',
-    layout: mode === 'tool' ? resolvedLayout(appId) : mode === 'orbit' ? layout : null,
+    mode, app: appId, center: { x: p.x - x, y: p.y - y }, scale, size, animation: general().animation || 'smooth', sound: general().sound || 'off',
+    layout: mode === 'tool' ? resolvedLayout(appId, layoutIdx, layout) : mode === 'orbit' ? layout : null,
     rings: mode === 'options' ? layout.rings : null,
     accent: (config.data.appearance || {}).accent,
+    disc: Look.theme(config.data.appearance).disc,
     glass: !!(config.data.appearance || {}).glass,
   });
   wheelWin.showInactive();
   if (mode === 'options') updateBlocking(); // middle click steps out a ring while it is open
+  // several layouts: the scroll wheel switches between them while this wheel is open
+  if (mode === 'tool' && LS.list(config.data, appId).length > 1 && input && input.setScroll) input.setScroll(true);
+}
+
+// Scrolled with the Tool wheel open: the next (or previous) layout, which is also the one it opens on next time
+let lastLayoutStep = 0;
+function stepLayout(dy) {
+  if (!wheel || wheel.mode !== 'tool' || wheel.closing) return;
+  const now = Date.now();
+  if (now - lastLayoutStep < 220) return; // one notch, one layout
+  const all = LS.list(config.data, wheel.appId);
+  if (all.length < 2) return;
+  lastLayoutStep = now;
+  const idx = LS.step(all.length, wheel.layoutIdx, dy < 0 ? 1 : -1);
+  wheel.layoutIdx = idx; wheel.layout = liveLayout(wheel.appId, idx); wheel.openSeg = -1;
+  wheel.hit = { seg: -1, tool: -1, ring: -1, slot: -1 };
+  config.update({ activeLayout: { ...(config.data.activeLayout || {}), [wheel.appId]: idx } });
+  wheelWin.webContents.send('wheel:layout', resolvedLayout(wheel.appId, idx, wheel.layout));
+  trackPointer(true);
 }
 
 // The Orbit switch needs the live list of apps first; tabs arrive after the wheel is up.
@@ -229,6 +272,7 @@ function closeWheel() {
   if (!wheel) return;
   const wasOptions = wheel.mode === 'options';
   wheel = null;
+  if (input && input.setScroll) input.setScroll(false);
   wheelWin.setIgnoreMouseEvents(true);
   wheelWin.webContents.send('wheel:close');
   wheelWin.hide();
@@ -263,6 +307,7 @@ function releaseWheel() {
   const toolId = G.resolve(wheel.hit, wheel.layout);
   if (!toolId) { closeWheel(); return; }
   wheel.closing = true;
+  config.update({ usage: Usage.record(config.data.usage, appId, toolId, Date.now()) }); // for "Most used"
   runTool(toolId, appId, true);
 }
 
@@ -277,6 +322,18 @@ function insideWheelWindow() {
 async function runTool(toolId, appId, fromWheel = false) {
   const t = toolDef(toolId);
   if (!t) return finish({ ok: false, msg: `Unknown tool ${toolId}` });
+
+  // A macro: its steps one after another, stopping at the first that fails (src/macros.js)
+  if (t.kind === 'macro') {
+    if (fromWheel && (t.steps || []).some((st) => (st.def || tools[st.id] || {}).kind === 'keys')) { closeWheel(); fromWheel = false; }
+    const r = await Macros.run(t, async (st) => {
+      const d = st.def || toolDef(st.id);
+      if (!d) return { ok: false, msg: 'that tool is gone' };
+      if (d.kind === 'keys') { await wait(40); sendKeys(d.keys); return { ok: true }; }
+      return bridge.run(d.app || appId, d.tool || st.id, d.args || {}, d.label);
+    }, wait);
+    return finish(r);
+  }
 
   if (t.kind === 'keys') {
     if (fromWheel) closeWheel();
@@ -318,7 +375,8 @@ function launch(target) {
   const expanded = target.replace(/^~(?=\/|$)/, os.homedir());
   if (expanded.includes('/') || expanded.includes('\\')) return shell.openPath(expanded);
   if (IS_MAC) return new Promise((r) => execFile('open', ['-a', expanded], () => r()));
-  return shell.openPath(expanded); // TODO(windows): look up apps by name
+  if (IS_WIN) return new Promise((r) => execFile('cmd', ['/c', 'start', '', expanded], { windowsHide: true }, () => r())); // by name, like Win+R
+  return shell.openPath(expanded);
 }
 
 // Runs a button / Options wheel action. Returns { ok, msg }.
@@ -379,6 +437,19 @@ async function toolCatalog(appId, ask = true) {
   const added = (config.data.apps || []).find((a) => a.id === appId);
   if (added) return { items: TC.build({ tools, app: appId, pack: AppWheels.commandsFor(added.bundleId) }), groups: TC.GROUPS, note: '', live: false };
   return { items: TC.build({ tools, app: appId, cores, effects, fps }), groups: TC.GROUPS, note, live };
+}
+
+// ---------------------------------------------------------------- theme for the panels
+
+// The Premiere / After Effects panel reads this file (and watches it), so it wears the look picked on the Appearance page.
+let lastTheme = '';
+function writeTheme() {
+  try {
+    const text = JSON.stringify(Look.theme(config.data.appearance).panel);
+    if (text === lastTheme) return;
+    lastTheme = text;
+    fs.writeFileSync(path.join(app.getPath('userData'), 'theme.json'), text);
+  } catch { /* the panel keeps its own colours */ }
 }
 
 // ---------------------------------------------------------------- updates
@@ -522,21 +593,44 @@ function recordInput() {
   });
 }
 
+// The built helper for this platform, or null. macOS: built with the app. Windows: built on the PC at first start.
+let helperError = null;
+function helperFile(name) {
+  if (IS_MAC) return app.isPackaged ? path.join(process.resourcesPath, name) : path.join(__dirname, '../build', name);
+  if (!IS_WIN) return null;
+  const sources = app.isPackaged ? path.join(process.resourcesPath, 'win') : path.join(__dirname, '../helper/win');
+  const r = WinHelper.ensure(name, sources, app.getPath('userData'));
+  if (!r.file) { helperError = r.error; console.warn(r.error); }
+  return r.file;
+}
+
 function wireInput() {
-  const helper = app.isPackaged ? path.join(process.resourcesPath, 'ew-input') : path.join(__dirname, '../build/ew-input');
-  input = createInput(helper);
+  input = createInput(helperFile('ew-input'));
+  input.on('front', (f) => front.set(f.name, f.id)); // Windows: the helper watches the app in front
   let holdTimer = null, holdSource = null;
 
-  input.on('ready', () => { inputReady = true; inputError = null; updateBlocking(); pushStatus(); });
+  // Ask macOS for Accessibility from HaloCut itself: that puts the right HaloCut in the list (once per launch)
+  const askForAccess = () => {
+    if (askedForAccess || !IS_MAC) return;
+    askedForAccess = true;
+    try { systemPreferences.isTrustedAccessibilityClient(true); } catch { /* the list still opens from Settings */ }
+  };
+  input.on('ready', (info = {}) => {
+    inputReady = true; inputError = null; inputLimited = !!info.listenOnly || (IS_WIN && !input.canBlock());
+    if (inputLimited) askForAccess(); // works now, but can't swallow the trigger yet
+    updateBlocking(); pushStatus();
+  });
   let toldAboutPermission = false;
   input.on('error', (e) => {
     inputReady = false; inputError = e.message; pushStatus();
+    if (/Accessibility is off/.test(e.message)) askForAccess();
     // macOS won't let HaloCut see the mouse and keys (usually after a new install): no wheel can open, so say so once
     if (!toldAboutPermission && PERMISSION_OFF.test(e.message)) { toldAboutPermission = true; openSettings(); }
   });
   input.on('recorded', (t) => recordWaiter && recordWaiter(t));
   input.on('recordCancelled', () => recordWaiter && recordWaiter(null));
   input.on('move', () => { if (wheel) trackPointer(); });
+  input.on('scroll', (ev) => stepLayout(ev.dy));
 
   input.on('press', (ev) => {
     if (ev.kind === 'mouse' && !ev.repeat) {
@@ -615,7 +709,8 @@ function extensionTarget(id = EXTENSION_ID) { return path.join(extensionsDir(), 
 
 function allowUnsignedPanels() {
   // Unsigned (development) panels need PlayerDebugMode. A signed .zxp build won't need this.
-  for (const v of [9, 10, 11, 12, 13]) {
+  // Premiere Pro / After Effects 2022–2027 use CEP 11 and 12; the later numbers are for the releases after them
+  for (const v of [9, 10, 11, 12, 13, 14, 15, 16]) {
     if (IS_MAC) execFile('defaults', ['write', `com.adobe.CSXS.${v}`, 'PlayerDebugMode', '1']);
     else execFile('reg', ['add', `HKCU\\Software\\Adobe\\CSXS.${v}`, '/v', 'PlayerDebugMode', '/t', 'REG_SZ', '/d', '1', '/f']);
   }
@@ -641,7 +736,7 @@ function wireIpc() {
   ipcMain.handle('settings:get', () => ({
     config: config.data, tools: allTools(), geometry: G.R, status: statusSnapshot(), platform: process.platform,
   }));
-  ipcMain.handle('settings:set', (_e, patch) => { config.update(patch); updateBlocking(); pushStatus(); return config.data; });
+  ipcMain.handle('settings:set', (_e, patch) => { config.update(patch); if (patch && patch.appearance) writeTheme(); updateBlocking(); pushStatus(); return config.data; });
   ipcMain.handle('settings:record', () => recordInput());
   ipcMain.handle('settings:checkUpdates', () => checkUpdates(true));
   ipcMain.handle('search:run', (_e, pick) => runSearchPick(pick || {}));
@@ -691,8 +786,13 @@ function wireIpc() {
     updateBlocking(); pushStatus();
     return { ok: r.ok, msg: r.msg, config: config.data };
   });
-  ipcMain.handle('settings:layout', (_e, appId) => resolvedLayout(appId));
+  ipcMain.handle('settings:layout', (_e, appId, idx) => resolvedLayout(appId, idx || 0));
   ipcMain.handle('settings:catalog', (_e, appId) => toolCatalog(appId));
+  // The Lumetri Color of the clip at Premiere's playhead, to save as a look of your own (src/presets.js)
+  ipcMain.handle('settings:readGrade', async () => {
+    if (!bridge.isConnected('PPRO')) return { ok: false, msg: 'Open Premiere Pro with the HaloCut panel first' };
+    return bridge.run('PPRO', 'pr.gradeRead', {}, 'Colour for a look of your own', 8000);
+  });
   ipcMain.handle('settings:install', () => {
     try { return installExtension(); } catch (e) { return { ok: false, msg: e.message }; }
   });
@@ -711,12 +811,61 @@ function wireIpc() {
     if (on !== undefined) { app.setLoginItemSettings({ openAtLogin: !!on, openAsHidden: true }); config.update({ general: { ...general(), openAtLogin: !!on } }); }
     return { openAtLogin: app.getLoginItemSettings().openAtLogin, packaged: app.isPackaged };
   });
+  // Saved copies of the settings (userData/backups): one press, no file dialog. See also the daily one at start.
+  ipcMain.handle('settings:saveNow', () => {
+    try {
+      const file = Backups.save(app.getPath('userData'), toBackup(config.data, app.getVersion()), 'saved');
+      return { ok: true, msg: `Settings saved · ${Backups.list(app.getPath('userData')).length} copies kept`, file };
+    } catch (e) { return { ok: false, msg: `Couldn't save a copy: ${e.message}` }; }
+  });
+  ipcMain.handle('settings:restore', async () => {
+    const dir = Backups.dirOf(app.getPath('userData'));
+    fs.mkdirSync(dir, { recursive: true });
+    const r = await dialog.showOpenDialog(settingsWin, { title: 'Restore saved HaloCut settings', defaultPath: dir, properties: ['openFile'], filters: [{ name: 'HaloCut settings', extensions: ['json'] }] });
+    if (r.canceled || !r.filePaths.length) return { ok: false, msg: 'Nothing restored' };
+    try {
+      Backups.save(app.getPath('userData'), toBackup(config.data, app.getVersion()), 'before-restore'); // so a restore can be undone
+      config.replace(fromBackup(fs.readFileSync(r.filePaths[0], 'utf8')));
+    } catch (e) { return { ok: false, msg: e.message }; }
+    if (wheel) closeWheel();
+    front.setApps(config.data.apps); writeTheme();
+    updateBlocking(); pushStatus();
+    return { ok: true, msg: `Restored ${path.basename(r.filePaths[0])}`, config: config.data };
+  });
   ipcMain.handle('settings:export', async () => {
     const r = await dialog.showSaveDialog(settingsWin, { title: 'Save HaloCut settings', defaultPath: path.join(app.getPath('documents'), `HaloCut settings ${new Date().toISOString().slice(0, 10)}.json`),
       filters: [{ name: 'HaloCut settings', extensions: ['json'] }] });
     if (r.canceled || !r.filePath) return { ok: false, msg: 'Not saved' };
     fs.writeFileSync(r.filePath, toBackup(config.data, app.getVersion()));
     return { ok: true, msg: `Saved to ${path.basename(r.filePath)}` };
+  });
+  // One Tool wheel layout as a file (src/wheel-share.js): save the one being edited, or load one as a new layout
+  ipcMain.handle('settings:exportWheel', async (_e, appId, idx) => {
+    const layout = LS.list(config.data, appId)[idx || 0];
+    if (!layout) return { ok: false, msg: 'No wheel to save' };
+    const added = (config.data.apps || []).find((a) => a.id === appId);
+    const appName = APP_NAMES[appId] || (added && added.name) || appId;
+    const r = await dialog.showSaveDialog(settingsWin, { title: 'Save this wheel', defaultPath: path.join(app.getPath('documents'), `${layout.name.replace(/[\\/:]/g, '-')}.halocut-wheel.json`),
+      filters: [{ name: 'HaloCut wheel', extensions: ['json'] }] });
+    if (r.canceled || !r.filePath) return { ok: false, msg: 'Not saved' };
+    fs.writeFileSync(r.filePath, WheelShare.toFile(layout, config.data.customTools, appId, appName, app.getVersion()));
+    return { ok: true, msg: `Saved to ${path.basename(r.filePath)}` };
+  });
+  ipcMain.handle('settings:importWheel', async (_e, appId) => {
+    const all = LS.list(config.data, appId);
+    if (!all.length) return { ok: false, msg: 'No Tool wheel for this app' };
+    if (all.length >= LS.MAX_LAYOUTS) return { ok: false, msg: `Up to ${LS.MAX_LAYOUTS} layouts: delete one first` };
+    const r = await dialog.showOpenDialog(settingsWin, { title: 'Load a wheel', properties: ['openFile'], filters: [{ name: 'HaloCut wheel', extensions: ['json'] }] });
+    if (r.canceled || !r.filePaths.length) return { ok: false, msg: 'Nothing loaded' };
+    let got;
+    try { got = WheelShare.fromFile(fs.readFileSync(r.filePaths[0], 'utf8'), appId, tools, config.data.customTools); } catch (e) { return { ok: false, msg: e.message }; }
+    if (!got.ok) return got;
+    let name = got.layout.name, n = 2;
+    while (all.some((l) => l.name === name)) name = `${got.layout.name} ${n++}`;
+    got.layout.name = name;
+    const extras = ((config.data.extraLayouts || {})[appId] || []).concat([got.layout]);
+    config.update({ extraLayouts: { ...(config.data.extraLayouts || {}), [appId]: extras }, customTools: { ...(config.data.customTools || {}), ...got.customTools } });
+    return { ok: true, msg: got.msg, index: all.length, config: config.data };
   });
   ipcMain.handle('settings:import', async () => {
     const r = await dialog.showOpenDialog(settingsWin, { title: 'Load HaloCut settings', properties: ['openFile'], filters: [{ name: 'HaloCut settings', extensions: ['json'] }] });
@@ -768,18 +917,24 @@ app.whenReady().then(() => {
   front.start();
   commandKeys.watch((list) => { commandShortcuts = list; updateBlocking(); });
 
-  const trayIcon = nativeImage.createFromPath(path.join(__dirname, '../assets/trayTemplate.png'));
-  trayIcon.setTemplateImage(true);
+  // macOS: a black shape the menu bar tints itself. Windows: the logo in colour, and a click opens Settings.
+  const trayIcon = IS_MAC
+    ? nativeImage.createFromPath(path.join(__dirname, '../assets/trayTemplate.png'))
+    : nativeImage.createFromPath(path.join(__dirname, '../assets/logo-128.png')).resize({ width: 32, height: 32, quality: 'best' });
+  if (IS_MAC) trayIcon.setTemplateImage(true);
   tray = new Tray(trayIcon);
   tray.setToolTip(PRODUCT);
+  if (!IS_MAC) tray.on('click', openSettings);
   updateTray();
 
-  if (IS_MAC) {
-    const appsHelper = app.isPackaged ? path.join(process.resourcesPath, 'ew-apps') : path.join(__dirname, '../build/ew-apps');
+  const appsHelper = helperFile('ew-apps');
+  if (appsHelper) {
     try { apps = new AppsHelper(appsHelper); apps.start(); }
-    catch (e) { apps = null; console.warn(e.message); } // TODO(windows): Orbit switch helper
+    catch (e) { apps = null; console.warn(e.message); } // no Orbit switch
   }
 
+  writeTheme();
+  try { Backups.save(app.getPath('userData'), toBackup(config.data, app.getVersion()), 'auto'); } catch { /* no copy today */ } // one a day
   createWheelWindow();
   createSearchWindow();
   wireIpc();

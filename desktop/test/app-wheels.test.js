@@ -36,6 +36,11 @@ for (const app of [RESOLVE, LRC, CAPCUT]) {
 }
 assert.deepStrictEqual(W.starter({ ...RESOLVE, id: W.idFor(RESOLVE.bundleId) }).layout.segments.map((s) => s.name), ['Edit', 'Marks', 'Timing', 'Pages', 'Color', 'Playback']);
 assert.deepStrictEqual(W.starter({ ...LRC, id: W.idFor(LRC.bundleId) }).layout.segments.map((s) => s.name), ['Develop', 'Copy', 'Flags', 'Stars', 'View', 'File']);
+assert.deepStrictEqual(W.starter({ bundleId: 'com.apple.FinalCut', name: 'Final Cut Pro', id: W.idFor('com.apple.FinalCut') }).layout.segments.map((s) => s.name), ['Edit', 'Storyline', 'Marks', 'Timing', 'Colour', 'View', 'Finish']);
+assert.deepStrictEqual(W.starter({ bundleId: 'com.adobe.Photoshop', name: 'Adobe Photoshop 2026', id: W.idFor('com.adobe.Photoshop') }).layout.segments.map((s) => s.name), ['Tools', 'Select', 'Layers', 'Adjust', 'Paint', 'View', 'File']);
+// every icon a pack names is drawn
+{ const win = {}; new Function('window', fs.readFileSync(path.join(__dirname, '../renderer/icons.js'), 'utf8'))(win);
+  for (const p of [...W.PACKS, W.BASICS]) { p.commands.forEach(([n, , icon]) => assert.ok(win.ICONS[icon], `${n}: no icon ${icon}`)); p.wheel.forEach(([n, icon]) => assert.ok(win.ICONS[icon], `${n}: no icon ${icon}`)); } }
 assert.deepStrictEqual(W.starter({ ...CAPCUT, id: W.idFor(CAPCUT.bundleId) }).layout.segments.map((s) => s.name), ['Edit', 'File', 'View'], 'an app HaloCut does not know: the basics');
 
 // adding: a tab, a Tool wheel, the Options wheel and buttons of "any app" to start from

@@ -153,5 +153,6 @@
 
   var api = { ACCENTS: ACCENTS, accent: accent, make: make, at: at, flatten: flatten, trimmed: trimmed };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloAccent = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloAccent = api; else if (typeof module !== "object") root.HaloAccent = api;
 })(typeof self !== "undefined" ? self : this);

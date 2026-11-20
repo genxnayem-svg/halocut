@@ -151,5 +151,6 @@
   var api = { RIGS: RIGS, GROUPS: GROUPS, TAG: TAG, EFFECTS: EFFECTS, rig: rig, controlName: controlName, expression: expression, rigOf: rigOf, job: job,
     renamed: renamed, timing: timing, align: align, folderFor: folderFor };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloKit = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloKit = api; else if (typeof module !== "object") root.HaloKit = api;
 })(typeof self !== "undefined" ? self : this);

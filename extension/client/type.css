@@ -8,6 +8,6 @@
 .t-style { padding: 0; border-radius: 10px; border: 1px solid var(--line); background: #0d0a12; color: var(--muted); font: inherit; cursor: pointer; overflow: hidden; text-align: left; }
 .t-style canvas { display: block; width: 100%; height: 44px; }
 .t-style span { display: block; padding: 3px 7px 5px; font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.t-style.on { border-color: rgba(255, 138, 61, .8); color: var(--text); box-shadow: 0 0 0 2px rgba(255, 138, 61, .16); }
+.t-style.on { border-color: rgba(var(--accent1-rgb), .8); color: var(--text); box-shadow: 0 0 0 2px rgba(var(--accent1-rgb), .16); }
 .row .chips { margin: 0; justify-content: flex-end; }
 .t-row { flex-wrap: wrap; margin: 8px 0 2px; }

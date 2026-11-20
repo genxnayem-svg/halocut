@@ -13,11 +13,13 @@
   let data = await window.ew.invoke('settings:get');
   let page = 'wheel';
   let currentApp = 'PPRO';
+  let layoutIdx = 0; // which of the app's layouts is being edited (0 = the first)
   let layout = await window.ew.invoke('settings:layout', currentApp);
   let hover = { seg: -1, tool: -1, openSeg: -1 };
   let picked = null;
   const MAC = data.platform === 'darwin';
   if (!MAC) document.body.classList.add('win');
+  if (!MAC) { const perm = document.querySelector('#stepPerm .body span'); if (perm) perm.textContent = 'Windows asks for no permission here. HaloCut is ready as soon as it starts.'; }
 
   document.querySelectorAll('[data-icon]').forEach((i) => { i.outerHTML = icon(i.dataset.icon); });
   $('version').textContent = `HaloCut ${data.status.version || ''}`;
@@ -43,9 +45,10 @@
   const MOD_LABEL = MAC ? { ctrl: '⌃ Control', alt: '⌥ Option', shift: '⇧ Shift', cmd: '⌘ Cmd' }
     : { ctrl: 'Ctrl', alt: 'Alt', shift: 'Shift', cmd: 'Win' };
   const BTN_LABEL = { left: 'Left button', right: 'Right button', middle: 'Middle button', mouse4: 'Mouse 4 (back)', mouse5: 'Mouse 5 (forward)' };
+  const KEY_LABEL = { key10: '§' }; // keys the helper has no name for arrive as "key<code>"
   const buttonLabel = (name) => BTN_LABEL[name] || name.replace(/^mouse(\d+)$/, 'Mouse $1');
   const comboParts = (t) => [...MOD_ORDER.filter((m) => (t.mods || []).includes(m)).map((m) => MOD_LABEL[m]),
-    t.kind === 'mouse' ? buttonLabel(t.name) : t.name];
+    t.kind === 'mouse' ? buttonLabel(t.name) : (KEY_LABEL[t.name] || t.name.replace(/^key(\d+)$/, 'Key $1'))];
   const kbds = (parts) => parts.map((p) => `<kbd>${p}</kbd>`).join(' ');
   const toolLabel = (id) => (data.tools[id] ? data.tools[id].label : id);
 
@@ -68,7 +71,7 @@
     document.querySelectorAll('.page').forEach((s) => { s.hidden = s.id !== (isSoon ? 'page-soon' : `page-${p}`); });
     if (isSoon) { $('soonTitle').textContent = SOON[p][0]; $('soonText').textContent = SOON[p][1]; }
     const apps = appsFor(p);
-    $('appTabs').style.visibility = apps ? 'visible' : 'hidden';
+    $('appTabs').hidden = !apps;
     if (apps && !apps.includes(currentApp)) setApp(apps[0]);
     showTabsFor(apps);
     if (p === 'practice') Practice.render();
@@ -102,7 +105,7 @@
     const add = document.createElement('button');
     add.dataset.add = '1';
     add.className = 'add-app';
-    add.title = 'Give another app its own Tool wheel, Options wheel and buttons: DaVinci Resolve, Lightroom, any app';
+    add.title = 'Give another app its own Tool wheel, Options wheel and buttons: DaVinci Resolve, Final Cut Pro, Photoshop, Lightroom, any app';
     add.textContent = '+ Add app';
     box.append(add);
     showTabsFor(appsFor(page));
@@ -113,7 +116,8 @@
     document.querySelectorAll('#appTabs button').forEach((b) => b.classList.toggle('on', b.dataset.app === appId));
     $('removeApp').hidden = !isAdded(appId);
     if (appId !== 'other') {
-      layout = await window.ew.invoke('settings:layout', appId);
+      layoutIdx = 0;
+      layout = await window.ew.invoke('settings:layout', appId, 0);
       hover = { seg: -1, tool: -1, openSeg: -1 };
       picked = null;
       renderPicked();
@@ -180,18 +184,19 @@
   // ------------------------------------------------------------ Tool wheel: changing it
   const TC = window.ToolCatalog;
   let pickedAt = null; // { seg, idx }: where the picked tool sits in the layout
-  const rawLayout = () => data.config.layouts[currentApp];
+  const LSETS = window.LayoutSets;
+  const rawLayout = () => LSETS.list(data.config, currentApp)[layoutIdx] || data.config.layouts[currentApp];
   const customTools = () => data.config.customTools || {};
 
   // res: { ok, layout, msg } from ToolCatalog. customs: new tools to remember, by id.
   async function saveLayout(res, customs) {
     if (res.msg) toast(res.msg, res.ok);
     if (!res.ok) return false;
-    const layouts = { ...data.config.layouts, [currentApp]: res.layout };
-    const kept = TC.prune({ ...customTools(), ...(customs || {}) }, { ...data.config, layouts });
-    await save({ layouts, customTools: kept });
+    const patch = LSETS.set(data.config, currentApp, layoutIdx, res.layout); // the layout being edited
+    const kept = TC.prune({ ...customTools(), ...(customs || {}) }, { ...data.config, ...patch });
+    await save({ ...patch, customTools: kept });
     data.tools = { ...data.tools, ...kept };
-    layout = await window.ew.invoke('settings:layout', currentApp);
+    layout = await window.ew.invoke('settings:layout', currentApp, layoutIdx);
     const s = pickedAt && layout.segments[pickedAt.seg];
     picked = s && s.tools[pickedAt.idx] ? s.tools[pickedAt.idx] : null;
     if (!picked) pickedAt = null;
@@ -240,7 +245,59 @@
 
   function pick(tool, at = null) { picked = tool; pickedAt = at; renderPicked(); renderSegments(); }
 
+  // ---- several layouts for one app: tabs to pick the one to edit, + to copy it into a new one
+  async function showLayout(idx) {
+    layoutIdx = idx;
+    layout = await window.ew.invoke('settings:layout', currentApp, idx);
+    hover = { seg: -1, tool: -1, openSeg: -1 }; picked = null; pickedAt = null;
+    renderPicked(); drawPreview(); renderSegments();
+  }
+  function renderLayoutTabs() {
+    const box = $('layoutTabs'), all = LSETS.list(data.config, currentApp);
+    box.innerHTML = '';
+    all.forEach((l, i) => {
+      const b = document.createElement('button');
+      b.className = i === layoutIdx ? 'on' : '';
+      b.textContent = LSETS.shortName(l);
+      b.title = l.name;
+      b.addEventListener('click', () => showLayout(i));
+      box.append(b);
+    });
+    const add = document.createElement('button');
+    add.className = 'add';
+    add.textContent = '+ New layout';
+    add.title = 'A copy of this layout to change. Scroll with the wheel open to switch between layouts';
+    add.addEventListener('click', async () => {
+      const r = LSETS.add(data.config, currentApp, layoutIdx);
+      toast(r.msg, r.ok);
+      if (!r.ok) return;
+      await save(r.patch);
+      showLayout(r.index);
+    });
+    box.append(add);
+    $('layoutEdit').hidden = layoutIdx === 0;
+    if (layoutIdx > 0 && document.activeElement !== $('layoutRename')) $('layoutRename').value = all[layoutIdx] ? all[layoutIdx].name : '';
+  }
+  $('layoutRename').addEventListener('change', async (e) => {
+    const r = LSETS.rename(data.config, currentApp, layoutIdx, e.target.value);
+    if (!r.ok) return;
+    await save(r.patch);
+    showLayout(layoutIdx);
+  });
+  $('layoutDelete').addEventListener('click', async () => {
+    const r = LSETS.remove(data.config, currentApp, layoutIdx);
+    toast(r.msg, r.ok);
+    if (!r.ok) return;
+    const kept = TC.prune(customTools(), { ...data.config, ...r.patch }); // tools only that layout used go with it
+    await save({ ...r.patch, customTools: kept });
+    showLayout(0);
+  });
+
   $('tapToStick').addEventListener('change', (e) => save({ wheel: { ...data.config.wheel, tapToStick: e.target.checked } }));
+  $('mostUsed').addEventListener('change', async (e) => {
+    await save({ wheel: { ...data.config.wheel, mostUsed: e.target.checked } });
+    toast(e.target.checked ? 'On: it shows on the wheel once you have used two tools' : 'Most used segment off');
+  });
 
   // Trigger list editor, shared by the Tool wheel and the Options wheel.
   // which: "wheel" or "options" (the config key holding { triggers: [...] }).
@@ -587,6 +644,7 @@
 
   function renderSegments() {
     $('layoutName').textContent = `· ${layout.name}`;
+    renderLayoutTabs();
     const box = $('segments');
     box.innerHTML = '';
     layout.segments.forEach((seg, si) => {
@@ -632,7 +690,7 @@
   $('addSegment').addEventListener('click', () => openPicker({ seg: null }));
 
   // ------------------------------------------------------------ Tool wheel: the picker
-  const SEG_NAME = { halocut: 'HaloCut', prtools: 'Tools', prcommands: 'Commands', effects: 'Effects', audio: 'Audio', transitions: 'Transitions', looks: 'Looks', keys: 'Shortcuts' };
+  const SEG_NAME = { macro: 'Macros', mylook: 'My looks', halocut: 'HaloCut', prtools: 'Tools', prcommands: 'Commands', effects: 'Effects', audio: 'Audio', transitions: 'Transitions', looks: 'Looks', keys: 'Shortcuts' };
   const PK = { target: null, app: null, items: [], groups: TC.GROUPS, shown: [], at: 0, group: 'all', note: '' };
 
   async function loadCatalog(force) {
@@ -648,6 +706,8 @@
     const have = new Set(PK.items.map((i) => i.id)), own = [];
     for (const [id, t] of Object.entries(customTools())) {
       if (!have.has(id) && t.kind === 'keys' && t.app === currentApp) own.push({ id, label: t.label, hint: TC.keysLabel(t.keys, MAC), group: 'keys', icon: t.icon || 'keyboard', def: t });
+      if (!have.has(id) && t.own === 'look' && t.app === currentApp) own.push({ id, label: t.label, hint: t.hint || '', group: 'mylook', icon: 'palette', def: t });
+      if (!have.has(id) && t.kind === 'macro' && t.app === currentApp) own.push({ id, label: t.label, hint: t.hint || '', group: 'macro', icon: t.icon || 'layersEach', def: t });
     }
     return PK.items.concat(own);
   }
@@ -692,7 +752,7 @@
     const count = {}; items.forEach((i) => { count[i.group] = (count[i.group] || 0) + 1; });
     const box = $('pickerGroups');
     box.innerHTML = '';
-    PK.groups.filter((g) => g.id === 'all' || g.id === 'keys' || count[g.id]).forEach((g) => {
+    PK.groups.filter((g) => g.id === 'all' || g.id === 'keys' || g.id === 'macro' || (g.id === 'mylook' && currentApp === 'PPRO') || count[g.id]).forEach((g) => {
       const b = document.createElement('button');
       b.className = 'chip' + (g.id === PK.group ? ' on' : '');
       b.innerHTML = `${g.name} <small>${g.id === 'all' ? items.length : count[g.id] || ''}</small>`;
@@ -701,7 +761,11 @@
     });
     $('pickerNote').textContent = PK.note;
     $('pickerKeys').hidden = PK.group !== 'keys';
-    PK.shown = TC.search(items, $('pickerSearch').value, PK.group);
+    // Macros: the list is every tool, and a click adds it as the macro's next step
+    $('pickerLook').hidden = PK.group !== 'mylook';
+    $('pickerMacro').hidden = PK.group !== 'macro';
+    if (PK.group === 'macro') renderMacroSteps();
+    PK.shown = PK.group === 'macro' ? TC.search(items.filter((i) => !(i.def && i.def.kind === 'macro')), $('pickerSearch').value, 'all') : TC.search(items, $('pickerSearch').value, PK.group);
     PK.at = Math.min(PK.at, Math.max(0, PK.shown.length - 1));
     renderPickerList();
   }
@@ -710,7 +774,7 @@
     list.innerHTML = '';
     if (msg) { list.innerHTML = `<div class="pk-empty">${msg}</div>`; return; }
     if (!PK.shown.length) {
-      list.innerHTML = `<div class="pk-empty">${PK.mode !== 'apps' && PK.group === 'keys' ? 'Record a shortcut above to put it on the wheel.' : 'Nothing by that name.'}</div>`;
+      list.innerHTML = `<div class="pk-empty">${PK.mode !== 'apps' && PK.group === 'keys' ? 'Record a shortcut above to put it on the wheel.' : PK.mode !== 'apps' && PK.group === 'mylook' ? 'No looks of your own yet. Save one above.' : 'Nothing by that name.'}</div>`;
       return;
     }
     const seg = PK.target && PK.target.seg !== null ? rawLayout().segments[PK.target.seg] : null;
@@ -734,6 +798,12 @@
     if (PK.mode === 'apps' && PK.appsFor === 'tabs') { await addApp(it.app); return; }
     if (PK.mode === 'apps') { await pinApp(it.app); showPicker(); return; }
     if (!PK.target) return;
+    if (PK.group === 'macro' && !(it.def && it.def.kind === 'macro')) {
+      if (MC.steps.length >= Macros.MAX_STEPS) { toast(`Up to ${Macros.MAX_STEPS} steps`, false); return; }
+      MC.steps.push({ id: it.id, label: it.label, def: it.def || null });
+      renderMacroSteps();
+      return;
+    }
     const customs = it.def ? { [it.id]: it.def } : null;
     let res;
     if (PK.target.seg === null) {
@@ -744,6 +814,39 @@
     }
     if (await saveLayout(res, customs)) { pickerTitle(); showPicker(); }
   }
+  // My looks: the colour of the clip at Premiere's playhead, saved under a name and put on the wheel
+  $('lkAdd').addEventListener('click', async () => {
+    if (!$('lkName').value.trim()) { toast('Give the look a name', false); return; }
+    const r = await window.ew.invoke('settings:readGrade');
+    if (!r || !r.ok) { toast((r && r.msg) || "Couldn't read the clip", false); return; }
+    const m = Presets.fromGrade($('lkName').value, r.data, customTools());
+    if (!m.ok) { toast(m.msg, false); return; }
+    await addPicked({ id: m.id, label: m.def.label, hint: m.def.hint, group: 'mylook', icon: 'palette', def: m.def });
+    $('lkName').value = '';
+    toast(m.msg);
+  });
+  // Macros: name it, click tools in the list as its steps, add it to the wheel
+  const MC = { steps: [] };
+  function renderMacroSteps() {
+    const box = $('mcSteps');
+    box.innerHTML = '';
+    if (!MC.steps.length) { box.innerHTML = '<span class="mc-hint">Click tools in the list below, in the order they should run. Macros you made are under All.</span>'; return; }
+    MC.steps.forEach((st, i) => {
+      const chip = document.createElement('span');
+      chip.className = 'mc-step';
+      chip.innerHTML = `<i>${i + 1}</i><b></b><button title="Remove this step">×</button>`;
+      chip.querySelector('b').textContent = st.label;
+      chip.querySelector('button').addEventListener('click', () => { MC.steps.splice(i, 1); renderMacroSteps(); });
+      box.append(chip);
+    });
+  }
+  $('mcAdd').addEventListener('click', async () => {
+    const m = Macros.make(currentApp, $('mcName').value, MC.steps, customTools());
+    if (!m.ok) { toast(m.msg, false); return; }
+    PK.group = 'all';
+    await addPicked({ id: m.id, label: m.def.label, hint: m.def.hint, group: 'macro', icon: m.def.icon, def: m.def });
+    MC.steps = []; $('mcName').value = '';
+  });
   $('pickerSearch').addEventListener('input', () => { PK.at = 0; showPicker(); });
   $('pickerClose').addEventListener('click', closePicker);
   $('picker').addEventListener('mousedown', (e) => { if (e.target === $('picker')) closePicker(); });
@@ -752,7 +855,7 @@
     if ($('picker').hidden) return;
     if (e.key === 'Escape') { e.preventDefault(); closePicker(); return; }
     if (PK.mode === 'apps' && e.key === 'Enter' && PK.shown[PK.at]) { e.preventDefault(); addPicked(PK.shown[PK.at]); return; }
-    if (document.activeElement && ['pkKeys', 'pkName'].includes(document.activeElement.id)) return;
+    if (document.activeElement && ['pkKeys', 'pkName', 'mcName', 'lkName'].includes(document.activeElement.id)) return;
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
       PK.at = Math.max(0, Math.min(PK.shown.length - 1, PK.at + (e.key === 'ArrowDown' ? 1 : -1)));
@@ -777,12 +880,26 @@
   });
 
   $('resetLayout').addEventListener('click', async () => {
+    if (layoutIdx > 0) { toast('Reset is for the first layout. Delete this one instead, or change it', false); return; }
     data.config = await window.ew.invoke('settings:resetLayout', currentApp);
-    layout = await window.ew.invoke('settings:layout', currentApp);
+    layout = await window.ew.invoke('settings:layout', currentApp, 0);
     drawPreview(); renderSegments();
     toast('Layout reset');
   });
   $('openConfig').addEventListener('click', () => window.ew.invoke('settings:openConfig'));
+  // One wheel as a file: save the layout being edited, or load one as a new layout
+  $('exportWheel').addEventListener('click', async () => {
+    const r = await window.ew.invoke('settings:exportWheel', currentApp, layoutIdx);
+    toast(r.msg, r.ok);
+  });
+  $('importWheel').addEventListener('click', async () => {
+    const r = await window.ew.invoke('settings:importWheel', currentApp);
+    toast(r.msg, r.ok);
+    if (!r.ok || !r.config) return;
+    data.config = r.config;
+    data.tools = { ...data.tools, ...(r.config.customTools || {}) };
+    showLayout(r.index);
+  });
 
   // ------------------------------------------------------------ Button mapping page
   const BUTTONS = ['middle', 'mouse4', 'mouse5'];
@@ -889,6 +1006,8 @@
     });
     $('inputState').textContent = data.status.inputError
       ? `Not listening: ${data.status.inputError}`
+      : data.status.limitedWhy ? data.status.limitedWhy
+      : data.status.inputLimited ? 'Listening, limited: Accessibility is off, so your trigger also reaches the app underneath. Turn HaloCut on under Accessibility for full control.'
       : data.status.accessibility ? 'Listening to every mouse and keyboard. Buttons you map are taken over.' : 'Waiting for the macOS permission (Setup & help).';
   }
 
@@ -950,11 +1069,14 @@
 
   function applyAppearance() {
     const a = look();
-    const [c1, c2] = LOOK.accentOf(a.accent), bg = LOOK.backgroundOf(a.background);
-    document.documentElement.style.setProperty('--a1', c1);
-    document.documentElement.style.setProperty('--a2', c2);
+    const t = LOOK.theme(a), root = document.documentElement;
+    root.style.setProperty('--a1', t.a1);
+    root.style.setProperty('--a2', t.a2);
+    root.style.setProperty('--wd1', t.disc[0]); root.style.setProperty('--wd2', t.disc[1]); // the wheel previews
     // on the body, so they win over the older body[data-bg] rules
-    [['--bg', bg.bg], ['--bg2', bg.bg2], ['--glow1', bg.glow1], ['--glow2', bg.glow2]].forEach(([k, v]) => document.body.style.setProperty(k, v));
+    [['--bg', t.bg], ['--bg2', t.bg2], ['--glow1', t.glow1], ['--glow2', t.glow2], ['--text', t.text], ['--muted', t.muted],
+      ['--card', t.card], ['--card-strong', t.cardStrong], ['--line', t.line], ['--side', t.side]].forEach(([k, v]) => document.body.style.setProperty(k, v));
+    document.body.classList.toggle('light', t.light);
     document.body.dataset.bg = a.background;
     document.body.classList.toggle('noglow', a.glow === false);
     return a;
@@ -989,7 +1111,7 @@
       const b = document.createElement('button');
       b.className = 'bg-card' + (a.background === id ? ' on' : '');
       b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(a.background === id));
-      b.innerHTML = `<div class="mini" style="background:linear-gradient(160deg, ${bg.bg2}, ${bg.bg})">
+      b.innerHTML = `<div class="mini${bg.light ? ' light' : ''}" style="background:linear-gradient(160deg, ${bg.bg2}, ${bg.bg})">
           <span class="m-glow" style="background:${bg.glow2}"></span>
           <div class="m-side"><i class="on"></i><i></i><i></i><i></i></div>
           <div class="m-main"><div class="m-card"></div><div class="m-card"></div></div><span class="m-btn"></span>
@@ -1016,6 +1138,7 @@
   const CHOICES = {
     genSize: ['wheelSize', [['small', 'Small'], ['medium', 'Medium'], ['large', 'Large']]],
     genAnim: ['animation', [['smooth', 'Smooth'], ['fast', 'Fast'], ['off', 'Off']]],
+    genSound: ['sound', [['off', 'Off'], ['soft', 'Soft'], ['clear', 'Clear']]],
     genNoteLen: ['noteLength', [['short', 'Short'], ['normal', 'Normal'], ['long', 'Long']]],
   };
   const gen = () => data.config.general || {};
@@ -1029,7 +1152,7 @@
       items.forEach(([value, label]) => {
         const b = document.createElement('button');
         b.textContent = label;
-        b.className = g[key] === value ? 'on' : '';
+        b.className = (g[key] || (key === 'sound' ? 'off' : undefined)) === value ? 'on' : '';
         b.addEventListener('click', () => setGeneral({ [key]: value }));
         box.append(b);
       });
@@ -1050,6 +1173,15 @@
   });
   $('genShow').addEventListener('change', (e) => setGeneral({ showOnStart: e.target.checked }));
   $('genNotes').addEventListener('change', (e) => setGeneral({ notes: e.target.checked }));
+  // A copy of the settings as they are now, and going back to one (HaloCut also keeps one a day by itself)
+  const saveNow = async () => { const r = await window.ew.invoke('settings:saveNow'); if (r.msg) toast(r.msg, r.ok); };
+  $('genSaveNow').addEventListener('click', saveNow);
+  $('saveNow').addEventListener('click', saveNow);
+  $('genRestore').addEventListener('click', async () => {
+    const r = await window.ew.invoke('settings:restore');
+    if (r.msg) toast(r.msg, r.ok);
+    if (r.ok) location.reload(); // every page from the restored settings
+  });
   $('genExport').addEventListener('click', async () => { const r = await window.ew.invoke('settings:export'); if (r.msg) toast(r.msg, r.ok); });
   $('genImport').addEventListener('click', async () => {
     const r = await window.ew.invoke('settings:import');
@@ -1071,8 +1203,8 @@
   // ------------------------------------------------------------ Setup page + live status
   function renderStatus(s) {
     data.status = s;
-    $('stepPerm').classList.toggle('done', s.accessibility);
-    $('permBtn').textContent = s.accessibility ? 'Allowed' : 'Open settings';
+    $('stepPerm').classList.toggle('done', s.accessibility || !!s.inputLimited);
+    $('permBtn').textContent = s.accessibility ? 'Allowed' : s.inputLimited ? 'Limited: allow Accessibility' : 'Open settings';
     $('stepExt').classList.toggle('done', s.extensionInstalled);
     $('installBtn').textContent = s.extensionInstalled ? 'Reinstall' : 'Install';
     $('stepConn').classList.toggle('done', !!(s.bridge.PPRO || s.bridge.AEFT));
@@ -1118,6 +1250,7 @@
   drawOptions();
   renderSlotEditor();
   $('tapToStick').checked = data.config.wheel.tapToStick;
+  $('mostUsed').checked = !!data.config.wheel.mostUsed;
   drawPreview();
   renderSegments();
   renderPicked();

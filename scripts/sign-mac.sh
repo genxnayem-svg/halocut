@@ -8,7 +8,10 @@ APP="$1"
 NAME="HaloCut Local Signing"
 [ -d "$APP" ] || { echo "No app at $APP" >&2; exit 1; }
 
-ID=$(security find-identity -p codesigning 2>/dev/null | grep "\"$NAME\"" | head -1 | awk '{print $2}')
+# Ad-hoc by default: on this Mac, macOS refused Accessibility to every certificate-signed build, while ad-hoc builds
+# get it after the installer clears the old entries (scripts/pkg/postinstall). HALOCUT_SIGN=cert uses the certificate.
+ID=""
+[ "$HALOCUT_SIGN" != "adhoc" ] && ID=$(security find-identity -p codesigning 2>/dev/null | grep "\"$NAME\"" | head -1 | awk '{print $2}')
 if [ -n "$ID" ]; then
   if codesign --force --deep -s "$ID" "$APP" && codesign --verify --deep --strict "$APP"; then
     echo "Signed with \"$NAME\": macOS keeps HaloCut's permissions across installs"
@@ -18,4 +21,4 @@ if [ -n "$ID" ]; then
   echo "Signing with \"$NAME\" didn't work: signing ad-hoc instead" >&2
 fi
 codesign --force --deep -s - "$APP" || exit 1
-echo "Signed ad-hoc: macOS will ask for HaloCut's permissions again after installing (run scripts/make-signing-cert.sh once to stop that)"
+echo "Signed ad-hoc: the installer clears HaloCut's old permission entries, and HaloCut asks macOS again on its first start"

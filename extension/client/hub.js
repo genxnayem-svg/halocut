@@ -121,7 +121,35 @@
     switcher(h, cur);
   }
 
-  window.HaloHub = { TOOLS: TOOLS, HUB_ID: HUB_ID };
+  // ---- the look picked in the HaloCut app (Appearance): the app keeps it in theme.json, and the panel follows it live
+  function themeFile() {
+    try {
+      var req = window.cep_node ? window.cep_node.require : window.require;
+      if (!req) return null;
+      var os = req("os"), path = req("path");
+      var dir = process.platform === "win32" ? path.join(process.env.APPDATA || "", "HaloCut") : path.join(os.homedir(), "Library/Application Support/HaloCut");
+      return { fs: req("fs"), file: path.join(dir, "theme.json") };
+    } catch (e) { return null; }
+  }
+  function wearTheme(t) {
+    if (!t) return;
+    var r = document.documentElement.style, ok = /^#[0-9a-f]{6}$/i;
+    var rgb = function (hex) { var n = parseInt(hex.slice(1), 16); return (n >> 16) + ", " + ((n >> 8) & 255) + ", " + (n & 255); };
+    if (ok.test(t.accent1)) { r.setProperty("--accent1", t.accent1); r.setProperty("--accent1-rgb", rgb(t.accent1)); }
+    if (ok.test(t.accent2)) { r.setProperty("--accent2", t.accent2); r.setProperty("--accent2-rgb", rgb(t.accent2)); }
+    if (ok.test(t.bg)) r.setProperty("--bg", t.bg);
+    if (ok.test(t.glow)) r.setProperty("--bg-glow", t.glow);
+  }
+  function followTheme() {
+    var tf = themeFile();
+    if (!tf) return;
+    var read = function () { try { wearTheme(JSON.parse(tf.fs.readFileSync(tf.file, "utf8"))); } catch (e) {} };
+    read();
+    try { tf.fs.watchFile(tf.file, { interval: 1500 }, read); } catch (e) {}
+  }
+  followTheme();
+
+  window.HaloHub = { TOOLS: TOOLS, HUB_ID: HUB_ID, wearTheme: wearTheme };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
 })();

@@ -69,5 +69,6 @@
 
   var api = { SIZES: SIZES, RULES: RULES, TAG: TAG, guess: guess, ruleOf: ruleOf, tagged: tagged, anchorOf: anchorOf, plan: plan, affine: affine, placeBox: placeBox, guides: guides, versionName: versionName };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloResize = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloResize = api; else if (typeof module !== "object") root.HaloResize = api;
 })(typeof self !== "undefined" ? self : this);

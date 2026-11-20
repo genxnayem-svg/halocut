@@ -99,7 +99,7 @@
   var KEYS_FILE = null;
   function keysFile() {
     if (KEYS_FILE || !req) return KEYS_FILE;
-    try { var path = req("path"), os = req("os"); KEYS_FILE = path.join(os.homedir(), "Library", "Application Support", "HaloCut", "command-shortcuts.json"); } catch (e) {}
+    try { var path = req("path"), os = req("os"); KEYS_FILE = process.platform === "win32" ? path.join(process.env.APPDATA || os.homedir(), "HaloCut", "command-shortcuts.json") : path.join(os.homedir(), "Library", "Application Support", "HaloCut", "command-shortcuts.json"); } catch (e) {}
     return KEYS_FILE;
   }
   function saveKeys() {

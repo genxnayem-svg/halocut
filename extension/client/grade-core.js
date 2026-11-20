@@ -221,5 +221,6 @@
     prepare: prepare, pixel: pixel, grade: grade, luma: luma, chroma: chroma, hueOf: hueOf, stats: stats, match: match,
     neutralAt: neutralAt, skinAt: skinAt, whiteAt: whiteAt, blackAt: blackAt, auto: auto, cube: cube };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloGrade = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloGrade = api; else if (typeof module !== "object") root.HaloGrade = api;
 })(typeof self !== "undefined" ? self : this);

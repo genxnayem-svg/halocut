@@ -83,5 +83,6 @@
 
   var api = { NORMAL: NORMAL, LOOKS: LOOKS, EASES: EASES, look: look, curve: curve, between: between, sample: sample, window: window_ };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloMotion = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloMotion = api; else if (typeof module !== "object") root.HaloMotion = api;
 })(typeof self !== "undefined" ? self : this);

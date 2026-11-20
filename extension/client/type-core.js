@@ -74,5 +74,6 @@
 
   var api = { STYLES: STYLES, GROUPS: GROUPS, BASED: BASED, NAME: NAME, style: style, job: job, amount: amount, units: units, lines: lines };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloType = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloType = api; else if (typeof module !== "object") root.HaloType = api;
 })(typeof self !== "undefined" ? self : this);

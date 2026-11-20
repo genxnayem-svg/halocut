@@ -58,5 +58,6 @@
 
   var api = { FRAMES: FRAMES, LAYOUTS: LAYOUTS, layout: layout, cells: cells, fitWindow: fitWindow, clampWindow: clampWindow, place: place };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloSplit = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloSplit = api; else if (typeof module !== "object") root.HaloSplit = api;
 })(typeof self !== "undefined" ? self : this);

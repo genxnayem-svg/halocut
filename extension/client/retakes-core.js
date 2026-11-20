@@ -116,5 +116,6 @@
 
   var api = { KINDS: KINDS, FILLER_WORDS: FILLER_WORDS, core: core, isSound: isSound, find: find, mumbles: mumbles, regions: regions, total: total };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloRetakes = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloRetakes = api; else if (typeof module !== "object") root.HaloRetakes = api;
 })(typeof self !== "undefined" ? self : this);

@@ -1,0 +1,12 @@
+const assert = require('assert');
+const P = require('../src/presets');
+const read = { here: { id: 'n1', name: 'A001.mov' }, values: { exposure: 0.4, contrast: 12, bad: NaN }, had: true };
+assert.strictEqual(P.fromGrade('', read).ok, false);
+assert.strictEqual(P.fromGrade('Warm', { here: null, values: {}, had: false }).ok, false);
+assert.strictEqual(P.fromGrade('Warm', { here: { name: 'x' }, values: {}, had: false }).ok, false);
+const r = P.fromGrade('Warm skin', read, {});
+assert.ok(r.ok); assert.strictEqual(r.id, 'custom.PPRO.look:warm-skin');
+assert.deepStrictEqual(r.def.args.values, { exposure: 0.4, contrast: 12 });
+assert.strictEqual(r.def.tool, 'pr.gradeLook'); assert.strictEqual(r.def.kind, 'bridge');
+assert.strictEqual(P.fromGrade('Warm skin', read, { [r.id]: r.def }).id, 'custom.PPRO.look:warm-skin-2');
+console.log('presets ok');

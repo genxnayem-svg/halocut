@@ -43,7 +43,7 @@ svg.ic { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-wid
 body.win .sidebar { padding-top: 16px; }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 18px; }
 .brand b { display: block; font-size: 15px; letter-spacing: -.01em; }
-.logo-img { width: 36px; height: 36px; flex: none; filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--a2) 35%, transparent)); }
+.logo-img { width: 48px; height: 48px; margin: -6px; flex: none; filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--a2) 35%, transparent)); }
 .brand span { color: var(--muted); font-size: 10.5px; }
 .logo {
   width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
@@ -408,3 +408,41 @@ kbd {
 #orbitPinned { margin-bottom: 8px; }
 #orbitHidden .chip { color: var(--text); font: inherit; font-size: 11.5px; }
 .pk-row .pk-img { width: 20px; height: 20px; border-radius: 5px; }
+
+/* Tool wheel: several layouts */
+.layout-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 8px; }
+.layout-tabs button { background: var(--card); border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 5px 12px; font: inherit; cursor: pointer; }
+.layout-tabs button:hover { color: var(--text); }
+.layout-tabs button.on { color: var(--text); border-color: var(--a1); background: color-mix(in srgb, var(--a1) 16%, transparent); }
+.layout-tabs button.add { border-style: dashed; }
+.layout-edit { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
+.layout-edit label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.layout-edit input { background: var(--card); border: 1px solid var(--line); border-radius: 8px; color: var(--text); padding: 5px 9px; font: inherit; width: 220px; }
+
+/* The light theme (Paper): the few places that assumed a dark window */
+body.light ::-webkit-scrollbar-thumb { background: rgba(40, 20, 60, .22); background-clip: padding-box; }
+body.light .glow { opacity: .55; }
+body.light kbd { background: rgba(40, 20, 60, .08); border-color: rgba(40, 20, 60, .18); color: var(--text); }
+body.light input[type="text"], body.light select, body.light textarea { color: var(--text); }
+body.light .stage, body.light .look-stage { background: #1d1722; border-radius: 16px; } /* the wheels stay dark: they sit over video */
+body.light .toast { background: #231d2b; color: #fff; }
+body.light .picker-box, body.light .pk-box { background: #f8f6fa; }
+.mini.light .m-side { background: rgba(40, 20, 60, .1); }
+.mini.light .m-side i { background: rgba(40, 20, 60, .22); }
+.mini.light .m-card { background: rgba(255, 255, 255, .8); border-color: rgba(40, 20, 60, .1); }
+.accent-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+.bg-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+body.light .tag, body.light .saved, body.light .accent-card .tick, body.light .bg-card .tick { color: color-mix(in srgb, var(--a2) 60%, #231d2b); }
+body.light .tag { border-color: color-mix(in srgb, var(--a2) 55%, transparent); }
+body.light .btn.primary { color: #1c1622; }
+body.light .segment .add, body.light .chip.add, body.light [class*="add"]:not(.btn):not(.add-app) { color: color-mix(in srgb, var(--a2) 65%, #231d2b); }
+
+/* Macro builder in the picker */
+.picker-macro label { grid-column: 1 / span 2; }
+.mc-steps { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 30px; }
+.mc-steps .mc-hint { color: var(--muted); font-size: 12px; }
+.mc-step { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; border-radius: 999px; font-size: 12px;
+  background: color-mix(in srgb, var(--a2) 22%, transparent); border: 1px solid color-mix(in srgb, var(--a2) 45%, transparent); }
+.mc-step i { font-style: normal; opacity: .6; }
+.mc-step button { border: 0; background: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0 4px; opacity: .7; }
+.mc-step button:hover { opacity: 1; }

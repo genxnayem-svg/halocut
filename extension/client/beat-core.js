@@ -130,5 +130,6 @@
   var api = { HOP: HOP, onsets: onsets, strength: strength, tempo: tempo, grid: grid, barPhase: barPhase, hits: hits,
     analyse: analyse, regrid: regrid, tapBpm: tapBpm, pick: pick };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloBeat = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloBeat = api; else if (typeof module !== "object") root.HaloBeat = api;
 })(typeof self !== "undefined" ? self : this);

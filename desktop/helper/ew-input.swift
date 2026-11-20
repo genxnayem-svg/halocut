@@ -9,6 +9,7 @@
 import Foundation
 import CoreGraphics
 import ApplicationServices
+import IOKit.hid
 
 let REPLAY_TAG: Int64 = 0x4557_0001 // marks events we post ourselves
 
@@ -54,6 +55,8 @@ func replay(_ down: CGEvent, _ up: CGEvent) {
     e.post(tap: .cghidEventTap)
   }
 }
+
+var scrollOn = false // report (and swallow) the scroll wheel
 
 func handle(_ type: CGEventType, _ event: CGEvent) -> Bool { // true = swallow
   if event.getIntegerValueField(.eventSourceUserData) == REPLAY_TAG { return false }
@@ -120,6 +123,14 @@ func handle(_ type: CGEventType, _ event: CGEvent) -> Bool { // true = swallow
     emit(["e": "up", "kind": "key", "code": code, "blocked": was])
     return was
 
+  case .scrollWheel:
+    // Only while HaloCut asks (a Tool wheel with several layouts is open): the scroll switches layout, not the timeline
+    guard scrollOn else { return false }
+    var dy = event.getIntegerValueField(.scrollWheelEventDeltaAxis1)
+    if dy == 0 { dy = event.getIntegerValueField(.scrollWheelEventPointDeltaAxis1) }
+    if dy != 0 { emit(["e": "scroll", "dy": dy]) }
+    return true
+
   default:
     return false
   }
@@ -147,6 +158,7 @@ func command(_ line: String) {
       return Rule(kind: kind, code: code, mods: Set(r["mods"] as? [String] ?? []),
                   delayMs: (r["delayMs"] as? NSNumber)?.doubleValue ?? 0)
     }
+  case "scroll": scrollOn = (obj["on"] as? Bool) ?? false
   case "record": recording = true
   case "cancelRecord": recording = false
   default: break
@@ -164,21 +176,29 @@ Thread.detachNewThread {
 
 let types: [CGEventType] = [
   .keyDown, .keyUp, .leftMouseDown, .leftMouseUp, .rightMouseDown, .rightMouseUp,
-  .otherMouseDown, .otherMouseUp, .mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged,
+  .otherMouseDown, .otherMouseUp, .mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged, .scrollWheel,
 ]
 let mask = types.reduce(CGEventMask(0)) { $0 | (CGEventMask(1) << $1.rawValue) }
 
-guard let port = CGEvent.tapCreate(tap: .cgSessionEventTap, place: .headInsertEventTap,
-                                   options: .defaultTap, eventsOfInterest: mask,
-                                   callback: callback, userInfo: nil) else {
-  emit(["e": "error", "msg": AXIsProcessTrusted()
-    ? "Input Monitoring is off for HaloCut"
-    : "Accessibility is off for HaloCut"])
+// The full tap (it can swallow the trigger) needs Accessibility. Without it, a listen-only tap needs only
+// Input Monitoring: the wheels still open, but the trigger also reaches the app underneath.
+var listenOnly = false
+var made = CGEvent.tapCreate(tap: .cgSessionEventTap, place: .headInsertEventTap,
+                             options: .defaultTap, eventsOfInterest: mask, callback: callback, userInfo: nil)
+if made == nil {
+  made = CGEvent.tapCreate(tap: .cgSessionEventTap, place: .headInsertEventTap,
+                           options: .listenOnly, eventsOfInterest: mask, callback: callback, userInfo: nil)
+  listenOnly = made != nil
+}
+guard let port = made else {
+  let ax = AXIsProcessTrusted()
+  if #available(macOS 10.15, *) { _ = IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) } // puts HaloCut in the Input Monitoring list
+  emit(["e": "error", "msg": ax ? "Input Monitoring is off for HaloCut" : "Accessibility is off for HaloCut"])
   exit(2)
 }
 tapPort = port
 let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, port, 0)
 CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
 CGEvent.tapEnable(tap: port, enable: true)
-emit(["e": "ready"])
+emit(["e": "ready", "listenOnly": listenOnly])
 CFRunLoopRun()

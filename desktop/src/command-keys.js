@@ -6,7 +6,10 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const FILE = path.join(os.homedir(), 'Library', 'Application Support', 'HaloCut', 'command-shortcuts.json');
+// Same place as the panel writes it (extension/client/command.js)
+const FILE = process.platform === 'win32'
+  ? path.join(process.env.APPDATA || os.homedir(), 'HaloCut', 'command-shortcuts.json')
+  : path.join(os.homedir(), 'Library', 'Application Support', 'HaloCut', 'command-shortcuts.json');
 
 const NAMES = {
   left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown', '\\': 'Backslash', '/': 'Slash', ',': 'Comma',

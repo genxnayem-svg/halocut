@@ -30,6 +30,29 @@ for v in 9 10 11 12 13; do
   as_user /usr/bin/defaults write "com.adobe.CSXS.$v" PlayerDebugMode 1
 done
 
-# Start HaloCut (it lives in the menu bar).
+# A new build is a new app to macOS: the old Accessibility / Input Monitoring entries stay switched on but no longer
+# count, and macOS won't ask again while they're there. Clear HaloCut's own entries (only HaloCut's), so HaloCut asks
+# macOS fresh on its first start and one switch puts it right.
+# HaloCut's app id changed to com.imtayznayem.halocut (0.2.x): macOS kept refusing the old id however it was
+# switched on. Clear the old id's leftovers, so only one HaloCut shows in the lists.
+OLD_ID="com.samistudio.halocut"
+NEW_ID="com.imtayznayem.halocut"
+for svc in Accessibility ListenEvent; do
+  /usr/bin/tccutil reset $svc $OLD_ID >/dev/null 2>&1
+  as_user /usr/bin/tccutil reset $svc $OLD_ID >/dev/null 2>&1
+done
+# An ad-hoc build is a new app to macOS each time (its old switches stop counting): clear its entries so it asks fresh.
+# A build signed with the certificate keeps its permission, so it is left alone.
+if /usr/bin/codesign -d -r- "$APP" 2>&1 | /usr/bin/grep -q "cdhash"; then
+  for svc in Accessibility ListenEvent; do
+    /usr/bin/tccutil reset $svc $NEW_ID >/dev/null 2>&1
+    as_user /usr/bin/tccutil reset $svc $NEW_ID >/dev/null 2>&1
+  done
+  for k in "$APP" "$APP/Contents/MacOS/HaloCut" "1::$APP" "1::$APP/Contents/MacOS/HaloCut" $NEW_ID 1::$NEW_ID; do
+    as_user /usr/bin/defaults delete com.apple.universalaccessAuthWarning "$k" >/dev/null 2>&1
+  done
+fi
+
+# Start HaloCut (it lives in the menu bar). It asks macOS for Accessibility itself when it doesn't have it.
 as_user /usr/bin/open "$APP" 2>/dev/null
 exit 0

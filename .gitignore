@@ -17,3 +17,4 @@ desktop/renderer/.preview-*.json
 *.keychain-db
 # The real project the live test must never touch (local only)
 desktop/test/.avoid
+promo/

@@ -106,7 +106,7 @@
     });
 
     // Centre: what will run on release
-    let title = opts.appLabel || layout.name, sub = 'Release in the centre to cancel';
+    let title = opts.appLabel || layout.name, sub = opts.sub || 'Release in the centre to cancel';
     if (hover.seg >= 0) {
       const seg = layout.segments[hover.seg];
       const t = hover.tool >= 0 ? seg.tools[hover.tool] : seg.main;

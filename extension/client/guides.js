@@ -122,5 +122,6 @@
 
   var api = { PRESETS: PRESETS, draw: draw, forFrame: forFrame };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloGuides = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloGuides = api; else if (typeof module !== "object") root.HaloGuides = api;
 })(typeof self !== "undefined" ? self : this);

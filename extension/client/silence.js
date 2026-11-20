@@ -2,8 +2,9 @@
  * Reads a clip's sound with FFmpeg, measures its level every 10 ms, and finds the pauses.
  * © 2026 Imtayz Nayem */
 (function (root, factory) {
-  if (typeof module === "object" && module.exports) module.exports = factory(require);
-  else root.HaloSilence = factory(window.cep_node ? window.cep_node.require : window.require);
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") root.HaloSilence = factory(window.cep_node ? window.cep_node.require : window.require);
+  else module.exports = factory(require);
 })(typeof self !== "undefined" ? self : this, function (req) {
   var cp = req("child_process");
   var fs = req("fs");

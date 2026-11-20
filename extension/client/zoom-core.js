@@ -114,5 +114,6 @@
     zoomAt: zoomAt, zoomFactor: zoomFactor, plan: plan, apply: apply, progressAt: progressAt, cropFor: cropFor,
     frameLayout: frameLayout, groupByRect: groupByRect, calloutLayout: calloutLayout };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloZoom = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloZoom = api; else if (typeof module !== "object") root.HaloZoom = api;
 })(typeof self !== "undefined" ? self : this);

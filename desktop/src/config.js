@@ -1,7 +1,7 @@
 // Settings stored as JSON in the app's user-data folder.
 const fs = require('fs');
 const path = require('path');
-const { layouts, previousLayouts } = require('./tools');
+const { layouts, previousLayouts, extraLayouts } = require('./tools');
 
 // Same segments, in the same order, with the same tools
 function sameLayout(a, b) {
@@ -15,7 +15,8 @@ const defaults = () => ({
   paused: false,
   appearance: { accent: 'sunset', background: 'dusk', glow: true, glass: false },
   // General page. wheelSize: small | medium | large · animation: smooth | fast | off · noteLength: short | normal | long
-  general: { openAtLogin: false, showOnStart: true, wheelSize: 'medium', animation: 'smooth', notes: true, noteLength: 'normal' },
+  // sound: off | soft | clear (a tick as the pointer crosses onto a segment or tool)
+  general: { openAtLogin: false, showOnStart: true, wheelSize: 'medium', animation: 'smooth', notes: true, noteLength: 'normal', sound: 'off' },
   wheel: {
     // Up to two triggers. Each is a key or mouse button, with optional modifiers.
     // delayMs: hold that long before the wheel opens; a quicker tap is passed on as a normal click.
@@ -26,6 +27,10 @@ const defaults = () => ({
     tapToStick: true,    // a quick tap keeps the wheel open; click a slice to run it
   },
   layouts: JSON.parse(JSON.stringify(layouts)),
+  // More Tool wheel layouts per app, after the first: scroll with the wheel open to switch ({ PPRO: [layout, …] })
+  extraLayouts: JSON.parse(JSON.stringify(extraLayouts)),
+  // The layout each app's wheel opens on (the one used last): { PPRO: 1 }
+  activeLayout: {},
   // Tools added from the settings page (Premiere effects, transitions, commands, shortcuts…), by id, like the built-in catalog
   customTools: {},
   options: defaultOptions(),
@@ -71,6 +76,7 @@ class Config {
         options: { ...this.data.options, ...(saved.options || {}) },
         orbit: { ...this.data.orbit, ...(saved.orbit || {}) },
         search: { ...this.data.search, ...(saved.search || {}) },
+        extraLayouts: { ...this.data.extraLayouts, ...(saved.extraLayouts || {}) },
         general: { ...this.data.general, ...(saved.general || {}) },
       };
     } catch { /* first run */ }
@@ -141,6 +147,7 @@ function fromBackup(text) {
     options: { ...d.options, ...(s.options || {}) },
     orbit: { ...d.orbit, ...(s.orbit || {}) },
     search: { ...d.search, ...(s.search || {}) },
+    extraLayouts: { ...d.extraLayouts, ...(s.extraLayouts || {}) },
     layouts: { ...d.layouts, ...(s.layouts || {}) },
     profiles: { ...d.profiles, ...(s.profiles || {}) },
   };

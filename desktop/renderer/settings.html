@@ -33,6 +33,7 @@
     <header class="topbar">
       <div class="crumb"><span class="dot" id="liveDot"></span><span id="crumb">Editing controls</span></div>
       <div class="top-actions">
+        <button class="pill" id="saveNow" title="Keep a copy of your settings as they are now. Restore one on the General page."><i data-icon="save"></i><span>Save settings</span></button>
         <button class="pill" id="pause"><i data-icon="pause"></i><span>Pause controls</span></button>
         <button class="pill" id="quit"><i data-icon="power"></i><span>Quit HaloCut</span></button>
       </div>
@@ -74,14 +75,25 @@
                   <label>Quick tap keeps it open<small>Then click a slice to run it</small></label>
                   <label class="switch"><input type="checkbox" id="tapToStick"><span></span></label>
                 </div>
+                <div class="row">
+                  <label>Most used segment<small>One more segment that fills itself with the tools you pick most</small></label>
+                  <label class="switch"><input type="checkbox" id="mostUsed"><span></span></label>
+                </div>
               </div>
             </div>
-            <h4 class="layout-title">Layout <span class="muted" id="layoutName"></span></h4>
-            <p class="muted small layout-hint">Click a tool to move or remove it. <b>+ Add</b> puts anything from the app on the wheel: its tools and commands, every effect and transition, HaloCut looks, or any keyboard shortcut.</p>
+            <h4 class="layout-title">Layouts <span class="muted" id="layoutName"></span></h4>
+            <div class="layout-tabs" id="layoutTabs"></div>
+            <div class="layout-edit" id="layoutEdit" hidden>
+              <label>Name <input type="text" id="layoutRename" maxlength="40"></label>
+              <button class="btn small danger" id="layoutDelete">Delete this layout</button>
+            </div>
+            <p class="muted small layout-hint">With more than one layout, <b>scroll while the wheel is open</b> to switch; it opens on the one you used last. Click a tool to move or remove it. <b>+ Add</b> puts anything from the app on the wheel: its tools and commands, every effect and transition, HaloCut looks, or any keyboard shortcut.</p>
             <div id="segments"></div>
             <div class="actions">
               <button class="btn" id="addSegment">+ New segment</button>
               <button class="btn" id="resetLayout">Reset this layout</button>
+              <button class="btn" id="exportWheel" title="This wheel as a file, to give to another editor or move to another Mac">Share this wheel…</button>
+              <button class="btn" id="importWheel" title="A wheel file someone gave you: it is added as a new layout, nothing is replaced">Load a wheel…</button>
               <button class="btn danger" id="removeApp" hidden>Remove this app</button>
               <button class="btn" id="openConfig">Open settings file</button>
             </div>
@@ -95,7 +107,7 @@
           <div class="card help">
             <h3>How it works</h3>
             <ol>
-              <li>Hold the trigger in Premiere Pro, After Effects or an app you added with <b>+ Add app</b> (DaVinci Resolve, Lightroom…). The wheel opens where the pointer is.</li>
+              <li>Hold the trigger in Premiere Pro, After Effects or an app you added with <b>+ Add app</b> (DaVinci Resolve, Final Cut Pro, Photoshop, Lightroom…). The wheel opens where the pointer is.</li>
               <li>Move onto a segment: its tools fan out in an arc. Let go on the segment itself for its main tool (outlined).</li>
               <li>Flick out to a tool and let go. A short note by the pointer says what it did.</li>
               <li>Tap instead of hold and the wheel stays open: click a tool, or press Esc.</li>
@@ -327,6 +339,7 @@
             <h4>Wheels</h4>
             <div class="row"><label>Size<small>The Tool wheel, Options wheel and Orbit switch</small></label><div class="choice" id="genSize"></div></div>
             <div class="row"><label>Animation<small>How the wheels open and close</small></label><div class="choice" id="genAnim"></div></div>
+            <div class="row"><label>Sound<small>A small tick as you cross onto a segment or tool, so you can pick without looking</small></label><div class="choice" id="genSound"></div></div>
             <div class="row">
               <label>Note after each action<small>The little note by the pointer once a tool has run. A problem always shows.</small></label>
               <label class="switch"><input type="checkbox" id="genNotes"><span></span></label>
@@ -334,6 +347,8 @@
             <div class="row" id="genNoteRow"><label>The note stays for</label><div class="choice" id="genNoteLen"></div></div>
             <h4>Your settings</h4>
             <div class="gen-btns">
+              <button class="btn primary" id="genSaveNow">Save settings now</button>
+              <button class="btn" id="genRestore">Restore a saved copy…</button>
               <button class="btn" id="genExport">Save to a file…</button>
               <button class="btn" id="genImport">Load from a file…</button>
               <button class="btn" id="genFile">Show the settings file</button>
@@ -419,6 +434,16 @@
         <label>Name on the wheel<input type="text" id="pkName" maxlength="24" placeholder="e.g. Nest"></label>
         <button class="btn primary small" id="pkAdd">Add it</button>
       </div>
+      <div class="picker-keys picker-macro" id="pickerLook" hidden>
+        <label>Look name<input type="text" id="lkName" maxlength="24" placeholder="e.g. Warm wedding"></label>
+        <button class="btn primary small" id="lkAdd">Save from clip</button>
+        <div class="mc-steps"><span class="mc-hint">In Premiere Pro, park the playhead on a clip you graded with Lumetri Color, then click Save from clip. The look goes on the wheel; picking it there puts the same colour on the selected clips.</span></div>
+      </div>
+      <div class="picker-keys picker-macro" id="pickerMacro" hidden>
+        <label>Macro name<input type="text" id="mcName" maxlength="24" placeholder="e.g. Cut and close"></label>
+        <div class="mc-steps" id="mcSteps"></div>
+        <button class="btn primary small" id="mcAdd">Add macro</button>
+      </div>
       <div class="picker-list" id="pickerList"></div>
       <p class="muted small picker-foot">Click to add · ↑↓ ↩ · Esc closes</p>
     </div>
@@ -427,7 +452,10 @@
   <script src="../src/wheel-geometry.js"></script>
   <script src="../src/options-geometry.js"></script>
   <script src="../src/tool-catalog.js"></script>
+  <script src="../src/macros.js"></script>
+  <script src="../src/presets.js"></script>
   <script src="../src/appearance.js"></script>
+  <script src="../src/layout-sets.js"></script>
   <script src="icons.js"></script>
   <script src="wheel-draw.js"></script>
   <script src="options-draw.js"></script>

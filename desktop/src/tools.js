@@ -273,4 +273,12 @@ const previousLayouts = {
   }],
 };
 
-module.exports = { tools, layouts, previousLayouts };
+// A second Premiere layout out of the box: the tools the first wheel had before 0.2.1 (scroll with the wheel open)
+const extraLayouts = {
+  PPRO: [{
+    name: 'Premiere Pro · Classic',
+    segments: previousLayouts.PPRO[0].segments.filter((sg) => ['Frame', 'Transform', 'Markers', 'Labels', 'Playback'].includes(sg.name)),
+  }],
+};
+
+module.exports = { tools, layouts, previousLayouts, extraLayouts };

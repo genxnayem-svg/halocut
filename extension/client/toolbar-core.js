@@ -96,5 +96,6 @@
 
   var api = { JOBS: JOBS, GROUPS: GROUPS, EXTRA_ICONS: EXTRA_ICONS, search: search, byId: byId, pinned: pinned, togglePin: togglePin, argsFor: argsFor };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloToolbar = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloToolbar = api; else if (typeof module !== "object") root.HaloToolbar = api;
 })(typeof self !== "undefined" ? self : this);

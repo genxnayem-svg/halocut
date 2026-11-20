@@ -161,5 +161,6 @@
   var api = { GROUPS: GROUPS, COMMANDS: COMMANDS, build: build, search: search, keyOf: keyOf, label: label, assign: assign, keysFor: keysFor,
     MAC_CODES: MAC_CODES, interest: interest, steps: steps, newCombo: newCombo, missing: missing, remember: remember };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloCommand = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloCommand = api; else if (typeof module !== "object") root.HaloCommand = api;
 })(typeof self !== "undefined" ? self : this);

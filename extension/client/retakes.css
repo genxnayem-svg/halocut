@@ -22,8 +22,8 @@
 .r-text .cut { cursor: pointer; border-radius: 5px; padding: 1px 4px; margin: 0 1px; text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .r-text .cut.off { text-decoration: none; opacity: .55; background: none !important; outline: 1px dashed rgba(255, 255, 255, .25); }
 .r-text .tc { color: var(--muted); font: 10px ui-monospace, Menlo, monospace; margin-right: 4px; }
-.k-retake { background: rgba(232, 69, 124, .28); }
-.k-sound { background: rgba(255, 138, 61, .3); }
+.k-retake { background: rgba(var(--accent2-rgb), .28); }
+.k-sound { background: rgba(var(--accent1-rgb), .3); }
 .k-stutter { background: rgba(255, 210, 74, .26); }
 .k-word { background: rgba(54, 194, 255, .24); }
 .k-mumble { background: rgba(163, 91, 240, .3); font-style: italic; }

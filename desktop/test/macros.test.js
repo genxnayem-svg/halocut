@@ -1,0 +1,21 @@
+const assert = require('assert');
+const M = require('../src/macros');
+(async () => {
+  const cut = { id: 'pr.cut', label: 'Cut', def: null }, rip = { id: 'pr.rippleDelete', label: 'Ripple delete', def: null };
+  assert.strictEqual(M.make('PPRO', '', [cut, rip]).ok, false);
+  assert.strictEqual(M.make('PPRO', 'One', [cut]).ok, false);
+  assert.strictEqual(M.make('PPRO', 'Many', Array(9).fill(cut)).ok, false);
+  const m = M.make('PPRO', 'Cut & close', [cut, rip], {});
+  assert.ok(m.ok); assert.strictEqual(m.id, 'custom.PPRO.macro:cut-close');
+  assert.strictEqual(m.def.kind, 'macro'); assert.strictEqual(m.def.steps.length, 2);
+  assert.strictEqual(M.make('PPRO', 'Cut & close', [cut, rip], { [m.id]: m.def }).id, 'custom.PPRO.macro:cut-close-2');
+  assert.strictEqual(M.make('PPRO', 'Nested', [cut, { id: m.id, label: 'x', def: m.def }]).ok, false);
+  const ran = [];
+  let r = await M.run(m.def, async (s) => { ran.push(s.id); return { ok: true }; }, async () => {});
+  assert.deepStrictEqual(ran, ['pr.cut', 'pr.rippleDelete']); assert.ok(r.ok); assert.strictEqual(r.done, 2);
+  r = await M.run(m.def, async (s) => (s.id === 'pr.cut' ? { ok: false, msg: 'no sequence' } : { ok: true }), async () => {});
+  assert.strictEqual(r.ok, false); assert.strictEqual(r.done, 0); assert.ok(/step 1 \(Cut\): no sequence/.test(r.msg));
+  r = await M.run(m.def, async () => { throw new Error('boom'); }, async () => {});
+  assert.strictEqual(r.ok, false);
+  console.log('macros ok');
+})().catch((e) => { console.error(e); process.exit(1); });

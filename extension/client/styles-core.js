@@ -156,5 +156,6 @@
   var api = { LOOKS: LOOKS, FAMILIES: FAMILIES, look: look, styled: styled, cased: cased, group: group, states: states,
     fontOf: fontOf, layout: layout, wordLook: wordLook, fromSrt: fromSrt, retext: retext };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloStyles = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloStyles = api; else if (typeof module !== "object") root.HaloStyles = api;
 })(typeof self !== "undefined" ? self : this);

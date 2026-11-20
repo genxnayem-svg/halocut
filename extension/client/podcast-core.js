@@ -117,5 +117,6 @@
 
   var api = { STEP: STEP, timeline: timeline, percentile: percentile, talkers: talkers, shots: shots, speech: speech, duckKeys: duckKeys, dbToLevel: dbToLevel, levelToDb: levelToDb, share: share };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloPodcast = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloPodcast = api; else if (typeof module !== "object") root.HaloPodcast = api;
 })(typeof self !== "undefined" ? self : this);

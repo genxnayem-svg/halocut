@@ -267,5 +267,6 @@
 
   var api = { parseXML: parseXML, color: color, transform: transform, parsePath: parsePath, arcToCubics: arcToCubics, read: read, toAE: toAE, layersOf: layersOf, recolour: recolour };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.HaloVector = api;
+  // in the panels Node is switched on, so `module` exists there too: the page still needs the global
+  if (typeof window !== "undefined") window.HaloVector = api; else if (typeof module !== "object") root.HaloVector = api;
 })(typeof self !== "undefined" ? self : this);

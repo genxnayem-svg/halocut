@@ -12,4 +12,10 @@
       <Host Name="AEFT" Port="8099"/>
     </HostList>
   </Extension>
+  <Extension Id="com.samistudio.halocut.hub">
+    <HostList>
+      <Host Name="PPRO" Port="8102"/>
+      <Host Name="AEFT" Port="8103"/>
+    </HostList>
+  </Extension>
 </ExtensionList>

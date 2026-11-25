@@ -1,0 +1,20 @@
+{
+  "appId": "com.imtayznayem.halocut",
+  "productName": "HaloCut",
+  "copyright": "© 2026 Imtayz Nayem",
+  "directories": { "output": "../dist" },
+  "win": { "target": [{ "target": "nsis", "arch": ["x64"] }], "icon": "build/HaloCut.ico" },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "artifactName": "HaloCut-Setup-${version}.exe",
+    "shortcutName": "HaloCut",
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "runAfterFinish": true,
+    "deleteAppDataOnUninstall": false,
+    "installerIcon": "build/HaloCut.ico",
+    "uninstallerIcon": "build/HaloCut.ico",
+    "uninstallDisplayName": "HaloCut"
+  }
+}

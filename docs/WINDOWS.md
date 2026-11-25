@@ -10,12 +10,17 @@ npm install
 npm run package:win
 ```
 
-This makes `dist/HaloCut-win32-x64/` and `dist/HaloCut-<version>-win-x64.zip`. Nothing is compiled on the Mac.
+This makes `dist/HaloCut-win32-x64/`, `dist/HaloCut-<version>-win-x64.zip` and the installer
+`dist/HaloCut-Setup-<version>.exe` (electron-builder + NSIS, settings in `desktop/installer-win.json`). Nothing is
+compiled on the Mac.
 
 ## Install on the PC
 
-1. Unzip, open the folder, run `HaloCut.exe`. The app is not signed, so Windows SmartScreen shows a warning the first
-   time: **More info → Run anyway**.
+1. Run `HaloCut-Setup-<version>.exe`. It installs for the person running it (no administrator) into
+   `%LOCALAPPDATA%\Programs\HaloCut`, adds Start menu and desktop shortcuts and an entry in Windows' list of apps
+   (for uninstalling), then starts HaloCut. Running a newer Setup over an old one updates it; settings stay.
+   Or, without installing: unzip the zip, open the folder, run `HaloCut.exe`.
+   Neither is signed, so Windows SmartScreen shows a warning the first time: **More info → Run anyway**.
 2. HaloCut sits in the tray (bottom right). Click it to open Settings.
 3. Settings → Setup & help → **Install** puts the bridge into Premiere Pro and After Effects
    (`%APPDATA%\Adobe\CEP\extensions`) and allows unsigned panels. Restart the editor.

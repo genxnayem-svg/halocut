@@ -1,6 +1,6 @@
 {
   "name": "halocut",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "repository": "github:genxnayem-svg/halocut",
   "main": "src/main.js",
   "scripts": {
@@ -20,7 +20,8 @@
   "private": true,
   "devDependencies": {
     "@electron/packager": "^18.4.4",
-    "electron": "^33.4.11"
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
   },
   "author": "Imtayz Nayem",
   "copyright": "© 2026 Imtayz Nayem"

@@ -40,7 +40,7 @@ All of them can be changed in Settings. Any key or mouse button can be a trigger
 
 ## Known limits
 
-- Windows: a first build exists (`cd desktop && npm run package:win` → `dist/HaloCut-<version>-win-x64.zip`), but it has
+- Windows: a first build exists (`cd desktop && npm run package:win` → `dist/HaloCut-Setup-<version>.exe` and a zip), but it has
   not been run on a PC yet. Wheels, buttons, the Orbit switch and the Adobe bridge are in; browser tabs on the Orbit
   switch, copy/paste frame in the panel and captions (speech) are still Mac only. See `docs/WINDOWS.md`.
 - Labels colour the source clip: a limit of Premiere's scripting API.

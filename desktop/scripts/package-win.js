@@ -1,4 +1,5 @@
-// Builds HaloCut for Windows (64-bit) into ../dist/HaloCut-win32-x64 and zips it: npm run package:win
+// Builds HaloCut for Windows (64-bit) into ../dist/HaloCut-win32-x64, zips it, and makes the installer
+// ../dist/HaloCut-Setup-<version>.exe (installer-win.json): npm run package:win
 // Works from a Mac: nothing is compiled here. The two helpers go along as C# sources (helper/win) and are built on the
 // PC the first time HaloCut starts (src/win-helper.js).
 // © 2026 Imtayz Nayem
@@ -52,7 +53,7 @@ function makeIcon() {
     dir: root, name: 'HaloCut', platform: 'win32', arch: 'x64', out: path.join(root, '../dist'), overwrite: true,
     icon: makeIcon(), appCopyright: pkg.copyright,
     extraResource: [path.join(root, '../extension'), path.join(root, 'helper/win')],
-    ignore: [/^\/test/, /^\/build/, /^\/helper/],
+    ignore: [/^\/test/, /^\/build/, /^\/helper/, /^\/scripts/, /^\/installer-win\.json/],
     win32metadata: { CompanyName: pkg.author, FileDescription: 'HaloCut', ProductName: 'HaloCut', InternalName: 'HaloCut' },
   });
   // the Mac-only speech binary stays out of the Windows build
@@ -60,5 +61,12 @@ function makeIcon() {
   const zip = path.join(root, '../dist', `HaloCut-${pkg.version}-win-x64.zip`);
   fs.rmSync(zip, { force: true });
   execFileSync('zip', ['-qry', zip, path.basename(dir)], { cwd: path.dirname(dir) });
-  console.log(`Built ${dir}\nZipped ${zip}`);
+  // the installer: one click, for the person installing (no administrator), Start menu and desktop shortcuts
+  const dist = path.join(root, '../dist');
+  execFileSync(path.join(root, 'node_modules/.bin/electron-builder'),
+    ['--win', 'nsis', '--x64', '--prepackaged', dir, '--config', 'installer-win.json', '--publish', 'never'], { cwd: root, stdio: 'inherit' });
+  const setup = path.join(dist, `HaloCut-Setup-${pkg.version}.exe`);
+  for (const extra of [`${setup}.blockmap`, path.join(dist, 'latest.yml'), path.join(dist, 'builder-debug.yml'), path.join(dir, 'resources/elevate.exe')]) fs.rmSync(extra, { force: true });
+  if (!fs.existsSync(setup)) throw new Error(`No ${setup}`);
+  console.log(`Built ${dir}\nZipped ${zip}\nInstaller ${setup}`);
 })().catch((e) => { console.error(e); process.exit(1); });

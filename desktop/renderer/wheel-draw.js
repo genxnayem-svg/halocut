@@ -33,17 +33,37 @@
     const n = layout.segments.length;
     const span = 360 / n;
     const gap = 1.4;
+    // Aurora glass: a tinted, see-through disc lit by the accent colours (--a1, --a2), a coloured rim and a soft shine
+    const A1 = 'var(--a1, #ff8a3d)', A2 = 'var(--a2, #e8457c)';
     let out = `
       <defs>
-        <radialGradient id="ew-disc" cx="50%" cy="45%" r="60%">
-          <stop offset="0%" stop-color="#2a2230" stop-opacity=".97"/>
-          <stop offset="100%" stop-color="#151118" stop-opacity=".97"/>
+        <radialGradient id="ew-disc" cx="${cx}" cy="${cy - R.ring * 0.2}" r="${R.ring * 1.1}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="var(--wd1, #2a1f33)" stop-opacity=".66"/>
+          <stop offset="100%" stop-color="var(--wd3, #0c0810)" stop-opacity=".82"/>
         </radialGradient>
+        <radialGradient id="ew-wash" cx="${cx - R.ring * 0.45}" cy="${cy - R.ring * 0.55}" r="${R.ring * 1.7}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="${A1}" stop-opacity=".40"/>
+          <stop offset="50%" stop-color="${A2}" stop-opacity=".14"/>
+          <stop offset="100%" stop-color="${A2}" stop-opacity=".30"/>
+        </radialGradient>
+        <linearGradient id="ew-rim" x1="${cx - R.ring}" y1="${cy - R.ring}" x2="${cx + R.ring}" y2="${cy + R.ring}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="${A1}"/><stop offset="100%" stop-color="${A2}"/>
+        </linearGradient>
+        <linearGradient id="ew-shine" x1="0" y1="${cy - R.ring}" x2="0" y2="${cy - R.ring * 0.3}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#fff" stop-opacity=".30"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="ew-sheen" x1="0" y1="${cy - R.tools}" x2="0" y2="${cy + R.tools}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#fff" stop-opacity=".34"/><stop offset="55%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".18"/>
+        </linearGradient>
+        <clipPath id="ew-clip"><circle cx="${cx}" cy="${cy}" r="${R.ring}"/></clipPath>
         <filter id="ew-shadow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#000" flood-opacity=".55"/>
+          <feDropShadow dx="0" dy="14" stdDeviation="17" flood-color="#000" flood-opacity=".6"/>
         </filter>
         <filter id="ew-glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="6"/>
+          <feGaussianBlur stdDeviation="8"/>
+        </filter>
+        <filter id="ew-glow2" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4"/>
         </filter>
       </defs>`;
 
@@ -55,13 +75,17 @@
       const a0 = slots[0] - step / 2;
       const a1 = a0 + step * seg.tools.length;
       const rIn = R.ring + 8, rOut = R.tools;
-      out += `<path d="${sector(cx, cy, rIn, rOut, a0, a1)}" fill="url(#ew-disc)" stroke="rgba(255,255,255,.10)" filter="url(#ew-shadow)"/>`;
+      const arcPath = sector(cx, cy, rIn, rOut, a0, a1);
+      out += `<path d="${arcPath}" fill="none" stroke="url(#ew-rim)" stroke-width="7" filter="url(#ew-glow)" opacity=".6"/>`;
+      out += `<path d="${arcPath}" fill="url(#ew-disc)" filter="url(#ew-shadow)"/><path d="${arcPath}" fill="url(#ew-wash)"/>`;
+      out += `<path d="${arcPath}" fill="none" stroke="url(#ew-rim)" stroke-width="1.6"/>`;
       slots.forEach((a, k) => {
         const tool = seg.tools[k];
         const active = hover.seg === open && hover.tool === k;
         const tint = tool.tint || '#ece8f2';
         if (active) {
-          out += `<path d="${sector(cx, cy, rIn + 3, rOut - 3, a - step / 2 + 0.8, a + step / 2 - 0.8)}" fill="${seg.color}" opacity=".9"/>`;
+          const d = sector(cx, cy, rIn + 3, rOut - 3, a - step / 2 + 0.8, a + step / 2 - 0.8);
+          out += `<path d="${d}" fill="${seg.color}" filter="url(#ew-glow2)" opacity=".8"/><path d="${d}" fill="${seg.color}"/><path d="${d}" fill="url(#ew-sheen)"/><path d="${d}" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1"/>`;
         }
         const [x, y] = polar(cx, cy, (rIn + rOut) / 2, a);
         if (tool.icon) out += icon(tool.icon, x, y, step > 24 ? 22 : 18, active ? '#fff' : tint);
@@ -70,7 +94,9 @@
     }
 
     // Main disc
-    out += `<circle cx="${cx}" cy="${cy}" r="${R.ring}" fill="url(#ew-disc)" stroke="rgba(255,255,255,.10)" filter="url(#ew-shadow)"/>`;
+    out += `<circle cx="${cx}" cy="${cy}" r="${R.ring + 2}" fill="none" stroke="url(#ew-rim)" stroke-width="9" filter="url(#ew-glow)" opacity=".8"/>`;
+    out += `<circle cx="${cx}" cy="${cy}" r="${R.ring}" fill="url(#ew-disc)" filter="url(#ew-shadow)"/>`;
+    out += `<circle cx="${cx}" cy="${cy}" r="${R.ring}" fill="url(#ew-wash)"/>`;
 
     // Slices first, then every icon and name on top: a lit slice never covers its neighbour's name
     layout.segments.forEach((seg, i) => {
@@ -78,19 +104,26 @@
       const a0 = mid - span / 2 + gap, a1 = mid + span / 2 - gap;
       const active = hover.seg === i && hover.tool < 0;
       const isOpen = open === i;
-      if (active || isOpen) {
-        out += `<path d="${sector(cx, cy, R.cancel + 6, R.ring - 4, a0, a1)}" fill="${seg.color}" opacity="${active ? 0.95 : 0.35}"/>`;
-        if (active) out += `<path d="${sector(cx, cy, R.ring - 10, R.ring - 4, a0, a1)}" fill="${seg.color}" filter="url(#ew-glow)"/>`;
+      const d = sector(cx, cy, R.cancel + 6, R.ring - 5, a0, a1);
+      if (active) {
+        // the picked slice: its own colour, glowing, with a sheen and a fine bright edge
+        out += `<path d="${d}" fill="${seg.color}" filter="url(#ew-glow)" opacity=".85"/><path d="${d}" fill="${seg.color}"/>`;
+        out += `<path d="${d}" fill="url(#ew-sheen)"/><path d="${d}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1"/>`;
+      } else if (isOpen) {
+        out += `<path d="${d}" fill="${seg.color}" opacity=".38"/><path d="${d}" fill="none" stroke="${seg.color}" stroke-width="1"/>`;
       } else {
-        out += `<path d="${sector(cx, cy, R.cancel + 6, R.ring - 4, a0, a1)}" fill="rgba(255,255,255,.035)"/>`;
+        out += `<path d="${d}" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.12)" stroke-width=".8"/>`;
       }
     });
+    // the shine on the glass, and its coloured rim
+    out += `<g clip-path="url(#ew-clip)"><ellipse cx="${cx}" cy="${cy - R.ring * 0.81}" rx="${R.ring * 0.93}" ry="${R.ring * 0.44}" fill="url(#ew-shine)"/></g>`;
+    out += `<circle cx="${cx}" cy="${cy}" r="${R.ring - 0.8}" fill="none" stroke="url(#ew-rim)" stroke-width="2"/>`;
     layout.segments.forEach((seg, i) => {
       const mid = G.segmentAngle(i, n);
       const active = hover.seg === i && hover.tool < 0;
       const isOpen = open === i;
       const [ix, iy] = polar(cx, cy, (R.cancel + R.ring) / 2 + 2, mid);
-      const col = active ? '#fff' : isOpen ? '#fff' : '#cfc8d8';
+      const col = active ? '#fff' : isOpen ? '#fff' : '#f1ecf7';
       if (seg.image) {
         const sz = n > 9 ? 30 : 36;
         out += `<image href="${seg.image}" x="${ix - sz / 2}" y="${iy - sz / 2 - 6}" width="${sz}" height="${sz}"${seg.dim && !active ? ' opacity=".45"' : ''}/>`;
@@ -113,7 +146,9 @@
       title = t.label;
       sub = t.hint || seg.name;
     }
-    out += `<circle cx="${cx}" cy="${cy}" r="${R.cancel}" fill="#0f0c12" stroke="${hover.seg >= 0 ? layout.segments[hover.seg].color : 'rgba(255,255,255,.14)'}" stroke-width="1.5"/>`;
+    const hub = hover.seg >= 0 ? layout.segments[hover.seg].color : 'url(#ew-rim)';
+    out += `<circle cx="${cx}" cy="${cy}" r="${R.cancel + 3}" fill="none" stroke="${hub}" stroke-width="5" filter="url(#ew-glow2)" opacity=".85"/>`;
+    out += `<circle cx="${cx}" cy="${cy}" r="${R.cancel}" fill="rgba(10,7,14,.8)" stroke="${hub}" stroke-width="1.6"/>`;
     out += `<foreignObject x="${cx - 120}" y="${cy + R.ring + 14}" width="240" height="56">
       <div xmlns="http://www.w3.org/1999/xhtml" class="caption"><b>${esc(title)}</b><span>${esc(sub)}</span></div></foreignObject>`;
     out += `<text x="${cx}" y="${cy + 5}" text-anchor="middle" class="centre-mark">${hover.seg >= 0 ? '●' : '✕'}</text>`;

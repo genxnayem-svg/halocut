@@ -1,6 +1,6 @@
 {
   "name": "halocut",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "repository": "github:genxnayem-svg/halocut",
   "main": "src/main.js",
   "scripts": {

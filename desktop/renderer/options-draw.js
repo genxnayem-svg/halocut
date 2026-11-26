@@ -86,8 +86,19 @@
     let out = `
       <defs>
         <radialGradient id="ow-disc" cx="${cx}" cy="${cy - outer * 0.25}" r="${outer * 1.15}" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#2b2431"/><stop offset="70%" stop-color="#18141d"/><stop offset="100%" stop-color="#0f0c13"/>
+          <stop offset="0%" stop-color="var(--wd1, #2b2431)" stop-opacity=".68"/><stop offset="70%" stop-color="var(--wd2, #18141d)" stop-opacity=".78"/><stop offset="100%" stop-color="var(--wd3, #0f0c13)" stop-opacity=".86"/>
         </radialGradient>
+        <radialGradient id="ow-wash" cx="${cx - outer * 0.45}" cy="${cy - outer * 0.55}" r="${outer * 1.7}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="var(--a1, #ff8a3d)" stop-opacity=".36"/><stop offset="50%" stop-color="var(--a2, #e8457c)" stop-opacity=".12"/><stop offset="100%" stop-color="var(--a2, #e8457c)" stop-opacity=".28"/>
+        </radialGradient>
+        <linearGradient id="ow-edge" x1="${cx - outer}" y1="${cy - outer}" x2="${cx + outer}" y2="${cy + outer}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="var(--a1, #ff8a3d)"/><stop offset="100%" stop-color="var(--a2, #e8457c)"/>
+        </linearGradient>
+        <linearGradient id="ow-shine" x1="0" y1="${cy - outer}" x2="0" y2="${cy - outer * 0.3}" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#fff" stop-opacity=".26"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <clipPath id="ow-clip"><circle cx="${cx}" cy="${cy}" r="${outer + 3}"/></clipPath>
+        <filter id="ow-aura" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
         <linearGradient id="ow-rim" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#fff" stop-opacity=".22"/><stop offset="55%" stop-color="#fff" stop-opacity=".05"/><stop offset="100%" stop-color="#fff" stop-opacity=".1"/>
         </linearGradient>
@@ -119,8 +130,11 @@
           <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
+      <circle cx="${cx}" cy="${cy}" r="${outer + 5}" fill="none" stroke="${u('ow-edge')}" stroke-width="9" filter="${u('ow-aura')}" opacity=".8"/>
       <circle cx="${cx}" cy="${cy}" r="${outer + 3}" fill="${u('ow-disc')}" filter="${u('ow-shadow')}"/>
-      <circle cx="${cx}" cy="${cy}" r="${outer + 2.5}" fill="none" stroke="${u('ow-rim')}" stroke-width="1"/>
+      <circle cx="${cx}" cy="${cy}" r="${outer + 3}" fill="${u('ow-wash')}"/>
+      <g clip-path="${u('ow-clip')}"><ellipse cx="${cx}" cy="${cy - outer * 0.81}" rx="${outer * 0.93}" ry="${outer * 0.44}" fill="${u('ow-shine')}"/></g>
+      <circle cx="${cx}" cy="${cy}" r="${outer + 2.2}" fill="none" stroke="${u('ow-edge')}" stroke-width="2"/>
       <g font-family="${FONT}">`;
 
     let hot = '';
